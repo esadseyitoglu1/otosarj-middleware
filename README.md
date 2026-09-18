@@ -32,6 +32,10 @@ Sürücü bunların hiçbirini bilerek yapmıyor — çünkü hiçbir uygulama o
 söylemiyor. Sektörde bu problemi çözen bir ürün bulunamadı: OCPP 2.0.1
 *güç limitlemeyi* çözüyor, *soket seçimini* çözmüyor.
 
+Bu iki senaryo kurgusal değil — bir sürücünün Bolu Highway'de yaşadığı
+tam bu iki deneyimi anlattığı kamuoyu videosu:
+[*"Elektrikli araç kullanma kültürü hala oturamadı"*](https://youtube.com/shorts/aqu1IQ80lGM) (Taha Hüseyin Karagöz).
+
 ## Çözüm
 
 Sürücü operatörün **kendi** uygulamasından bir soketin QR kodunu
