@@ -47,8 +47,8 @@ export function WelcomeGuide({ visible, onClose }: WelcomeGuideProps) {
           </h2>
         </div>
         <p className="mb-5 text-xs leading-relaxed text-slate-400">
-          Gerçek bir sunucuya bağlı çalışan canlı bir demo. Kurulum
-          yok, hesap yok — aşağıdaki 3 adımı takip edin.
+          Bu, gerçek bir middleware API'ye bağlı çalışan bir prototip. Kurulum
+          gerekmiyor — aşağıdaki 3 adımı takip edin.
         </p>
 
         <ol className="mb-6 space-y-3.5">
