@@ -3,7 +3,7 @@
 ## Çalışan
 - **packages/engine tamamlandı.** 25/25 test yeşil. R1-R5 kuralları,
   iki saha fixture'ı, taper modelli süre tahmini.
-- **packages/server tamamlandı.** 12/12 test yeşil. HMAC imzalı API
+- **packages/server tamamlandı.** 15/15 test yeşil. HMAC imzalı API
   (`POST /api/v1/scan` vb.), rate limit, input validation, read-only
   CSMS adapter, pseudonim + agrege telemetri.
 - **packages/web tamamlandı.** Vite + React + Tailwind simülatör.
@@ -19,6 +19,7 @@
     port 3001'e proxy, geri kalan statik dosyalardan
   - HTTPS: Let's Encrypt otomatik sertifika (Caddy), doğrulandı
   - Uçtan uca production testi geçti: senaryo A (1A dolu→1B okut→R1→2A önerisi)
+    ve senaryo B (büyük operatör sahası, PHEV+300kW→R2→fast-1 önerisi)
   - Güvenlik testleri production'da doğrulandı: imzasız istek 401,
     yetkisiz saha erişimi 401
 

@@ -148,7 +148,7 @@ npm run dev
 ## Proje durumu
 
 - ✅ **`packages/engine`** — tamamlandı, 25/25 test yeşil
-- ✅ **`packages/server`** — API katmanı tamam, 12/12 test yeşil, canlı yayında
+- ✅ **`packages/server`** — API katmanı tamam, 15/15 test yeşil, canlı yayında
 - ✅ **`packages/web`** — interaktif simülatör tamam, canlı yayında
 - 📋 **`docs/business/`** — ROI modeli, SWOT, pitch deck
 - 📋 **`docs/technical/`** — mimari, OCPP/OCPI entegrasyon, mevzuat analizi
