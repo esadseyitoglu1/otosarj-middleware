@@ -1,0 +1,19 @@
+{
+  "name": "otosarj-middleware",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Zero-friction akilli soket yonlendirme middleware - OtoPriz staj prototipi",
+  "workspaces": [
+    "packages/engine",
+    "packages/server",
+    "packages/web"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=packages/server & npm run dev --workspace=packages/web",
+    "dev:server": "npm run dev --workspace=packages/server",
+    "dev:web": "npm run dev --workspace=packages/web",
+    "build": "npm run build --workspace=packages/engine && npm run build --workspace=packages/server && npm run build --workspace=packages/web",
+    "test": "npm run test --workspace=packages/engine --if-present && npm run test --workspace=packages/server --if-present",
+    "test:watch": "npm run test:watch --workspace=packages/engine"
+  }
+}
