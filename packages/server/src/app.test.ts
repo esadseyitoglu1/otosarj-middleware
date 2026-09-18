@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { createApp } from './app.js';
-import { signRequest } from './testUtils.js';
+import { signRequest, TEST_LARGE_OPERATOR_API_KEY } from './testUtils.js';
 
 describe('POST /api/v1/scan - guvenlik', () => {
   it('imzasiz istek 401 doner, Decision donmemeli', async () => {
@@ -132,6 +132,57 @@ describe('GET /api/v1/stations/:id/live - guvenlik', () => {
       .get('/api/v1/stations/buyuk-operator-ornek/live')
       .set(headers);
     expect(res.status).toBe(404);
+  });
+
+  it('buyuk operator kendi key\'iyle kendi sahasini gorebilir', async () => {
+    const app = createApp();
+    const { headers } = signRequest(
+      'GET',
+      '/api/v1/stations/buyuk-operator-ornek/live',
+      undefined,
+      TEST_LARGE_OPERATOR_API_KEY
+    );
+    const res = await request(app)
+      .get('/api/v1/stations/buyuk-operator-ornek/live')
+      .set(headers);
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe('buyuk-operator-ornek');
+  });
+});
+
+describe('senaryo B - buyuk operator sahasinda R2 uctan uca', () => {
+  it('dogru API key ile PHEV + 300kW soket taramasi NUDGE doner (regresyon: web UI\'da saha degisince 400/404 hatasi vermemeli)', async () => {
+    const app = createApp();
+    const body = {
+      sessionId: 'session-large-op-e2e',
+      stationId: 'buyuk-operator-ornek',
+      scannedEvseId: 'ultra-1',
+      vehicleProfileId: 'toyota-prius-phev',
+      currentSocPercent: 20,
+    };
+    const { headers } = signRequest('POST', '/api/v1/scan', body, TEST_LARGE_OPERATOR_API_KEY);
+
+    const res = await request(app).post('/api/v1/scan').set(headers).send(body);
+
+    expect(res.status).toBe(200);
+    expect(res.body.verdict).toBe('NUDGE');
+    expect(res.body.triggeredRule).toBe('R2');
+  });
+
+  it('OtoPriz key\'iyle buyuk operator sahasi taranirsa 400 doner (yetki izolasyonu korunuyor)', async () => {
+    const app = createApp();
+    const body = {
+      sessionId: 'session-cross-tenant',
+      stationId: 'buyuk-operator-ornek',
+      scannedEvseId: 'ultra-1',
+      vehicleProfileId: 'toyota-prius-phev',
+      currentSocPercent: 20,
+    };
+    const { headers } = signRequest('POST', '/api/v1/scan', body);
+
+    const res = await request(app).post('/api/v1/scan').set(headers).send(body);
+
+    expect(res.status).toBe(400);
   });
 });
 

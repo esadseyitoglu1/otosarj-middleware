@@ -21,11 +21,23 @@ export interface ApiKeyStore {
 }
 
 // Prototip amacli in-memory key store. Gercek dagitimda bu bir secret
-// manager'dan (env, vault vb.) gelmeli.
+// manager'dan (env, vault vb.) gelmeli, her operator kendi key/secret
+// ciftini alir.
+//
+// Simulatorde iki saha (OtoPriz ve "buyuk operator") gosterildigi icin
+// iki demo key var -- bu, urunun operator-agnostik oldugunu (ayni
+// middleware, farkli operatorlere ayri yetkilerle hizmet verebiliyor)
+// production'da da dogru sekilde kanitliyor: web client saha
+// degistirince farkli bir API key ile imzaliyor (bkz. api/client.ts),
+// guvenlik kontrolu (operatorId eslesmesi) hicbir zaman gevsetilmiyor.
 export const DEMO_API_KEYS: ApiKeyStore = {
   'demo-otopriz-key': {
     secret: process.env.OTOSARJ_DEMO_HMAC_SECRET ?? 'demo-secret-degistir',
     operatorId: 'otopriz',
+  },
+  'demo-large-operator-key': {
+    secret: process.env.OTOSARJ_DEMO_HMAC_SECRET ?? 'demo-secret-degistir',
+    operatorId: 'buyuk-operator',
   },
 };
 
