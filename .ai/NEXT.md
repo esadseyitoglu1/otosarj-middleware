@@ -2,6 +2,10 @@
 
 1. **Aşama 2 — docs/business/**: ROI modeli (3 senaryo, peak/off-peak
    ayrımlı, 4 kalem), SWOT, pitch deck (Artifact ile web tabanlı).
+   Pitch'in açılışında kamuoyu kanıtı olarak kullanılacak:
+   [YouTube Shorts — "Elektrikli araç kullanma kültürü hala oturamadı"](https://youtube.com/shorts/aqu1IQ80lGM)
+   (Taha Hüseyin Karagöz) — Bolu Highway'de yaşanan tam R1+R2 senaryosu,
+   README'ye zaten eklendi.
 
 2. **Aşama 3 — docs/technical/**: ARCHITECTURE, OCPP_OCPI_INTEGRATION,
    DATA_OWNERSHIP, INTEGRATION_OTOPRIZ, REGULATORY, SECURITY, PRIVACY,
