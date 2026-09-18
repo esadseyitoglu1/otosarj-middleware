@@ -56,3 +56,20 @@ Gemini'nin "tek dosyalık React" önerisi reddedildi — tek dosya demo
 yapar, ürün göstermez. `engine` paketinin framework-bağımsız ve
 test'li olması, "gerçekten entegre edilebilir mi" sorusuna kanıtla
 cevap veriyor.
+
+## 10. Demo, sunucusuz statik değil — kullanıcının kendi sunucusunda gerçek API'ye bağlı
+İlk planlanan "engine'i tarayıcıda çalıştır, sunucusuz statik host"
+yaklaşımı terk edildi — kullanıcının kendi sunucusu (Debian 12,
+esadseyitoglu.xyz) olduğu ortaya çıkınca gerçek bir middleware API'ye
+bağlı demo kurmak hem daha güçlü bir kanıt (gerçek HTTP + HMAC akışı)
+hem de mümkün oldu. Mimari: systemd servisi (server) + Caddy statik
+dosya + reverse proxy (mevcut Docker Caddy container'ına yeni bir
+Caddyfile bloğu eklendi, diğer servislere dokunulmadı). Detay:
+`.ai/STATE.md` "Deploy mimarisi".
+
+## 11. Subdomain adı: otopriz (kullanıcı kararı), otosarj değil
+İlk kurulum `otosarj.esadseyitoglu.xyz` olarak yapılmıştı; kullanıcı
+Cloudflare'de bilerek `otopriz` ekledi çünkü hedef kitleye (OtoPriz'e)
+daha net hitap ediyor. Caddyfile ve web `.env.production` buna göre
+güncellendi. Proje/repo adı hâlâ "otosarj" (GitHub, dizin adı) — sadece
+canlı demo linki `otopriz` kullanıyor.

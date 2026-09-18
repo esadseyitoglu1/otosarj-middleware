@@ -4,6 +4,8 @@ Sürücüye yeni bir uygulama yükletmeden, DC hızlı şarj istasyonlarındaki
 **verimsiz soket seçimlerini** anında tespit edip "Nudge" (yönlendirme)
 öneren bir karar motoru ve middleware API prototipi.
 
+**🔗 Canlı demo:** https://otopriz.esadseyitoglu.xyz
+
 > **Bağlam:** Bu proje, Türkiye'deki şarj ağı operatörü **OtoPriz**'e
 > (Eksim Holding) staj başvurusu için hazırlanan çalışan bir prototiptir.
 > Amaç, sahada gerçekten yaşanan iki verimsizliği somut kodla göstermek.
@@ -146,8 +148,8 @@ npm run dev
 ## Proje durumu
 
 - ✅ **`packages/engine`** — tamamlandı, 25/25 test yeşil
-- 🚧 **`packages/server`** — API katmanı, sırada
-- 🚧 **`packages/web`** — interaktif simülatör, sırada
+- ✅ **`packages/server`** — API katmanı tamam, 12/12 test yeşil, canlı yayında
+- ✅ **`packages/web`** — interaktif simülatör tamam, canlı yayında
 - 📋 **`docs/business/`** — ROI modeli, SWOT, pitch deck
 - 📋 **`docs/technical/`** — mimari, OCPP/OCPI entegrasyon, mevzuat analizi
 
