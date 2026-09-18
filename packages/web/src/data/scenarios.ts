@@ -7,6 +7,8 @@ export interface ScenarioDef {
   id: string;
   label: string;
   description: string;
+  /** Operatör faydası özeti — opsiyonel, kart üzerinde gösterilir. */
+  revenueHint?: string;
   stationId: string;
   vehicleProfileId: string;
   scannedEvseId: string;
@@ -21,6 +23,7 @@ export const scenarios: ScenarioDef[] = [
     label: 'A · Power-sharing (ana senaryo)',
     description:
       'Kabin 1A dolu, siz 1B\'yi okutuyorsunuz. Kabin 2 tamamen boş.',
+    revenueHint: 'Nudge kabul edilirse +33 kWh · ~₺459 ciro fırsatı/seans',
     stationId: 'otopriz-taspinar-benzeri',
     vehicleProfileId: 'togg-t10x-rwd',
     scannedEvseId: '1B',
@@ -32,6 +35,7 @@ export const scenarios: ScenarioDef[] = [
     label: 'B · Kapasite aşırı-tahsisi',
     description:
       'Büyük operatör sahasında bir PHEV (50 kW), 300 kW\'lık soketi seçiyor.',
+    revenueHint: '300 kW soket boşa çalışıyor → yüksek güçlü araç için serbest kalır',
     stationId: 'buyuk-operator-ornek',
     vehicleProfileId: 'toyota-prius-phev',
     scannedEvseId: 'ultra-1',

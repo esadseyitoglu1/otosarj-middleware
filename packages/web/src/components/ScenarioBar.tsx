@@ -31,6 +31,9 @@ export function ScenarioBar({ onRun, onReset, running }: ScenarioBarProps) {
           >
             <div className="font-medium">{s.label}</div>
             <div className="mt-0.5 text-[10px] text-slate-500">{s.description}</div>
+            {s.revenueHint && (
+              <div className="mt-1 text-[10px] text-brand-400/80">↑ {s.revenueHint}</div>
+            )}
           </button>
         ))}
       </div>
