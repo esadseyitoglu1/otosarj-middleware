@@ -4,6 +4,7 @@ import { StationMap } from './components/StationMap';
 import { DriverPhone } from './components/DriverPhone';
 import { EngineLog } from './components/EngineLog';
 import { ScenarioBar } from './components/ScenarioBar';
+import { WelcomeGuide, markWelcomeSeen, useShouldShowWelcomeOnLoad } from './components/WelcomeGuide';
 import { otoprizLayout, largeOperatorLayout, type StationLayout } from './data/stationLayout';
 import { scenarios } from './data/scenarios';
 import { useSessionId } from './hooks/useSessionId';
@@ -16,6 +17,8 @@ const LAYOUTS: Record<string, StationLayout> = {
 
 function App() {
   const sessionId = useSessionId();
+  const showOnLoad = useShouldShowWelcomeOnLoad();
+  const [guideVisible, setGuideVisible] = useState(showOnLoad);
 
   const [stationId, setStationId] = useState(otoprizLayout.stationId);
   const [station, setStation] = useState<Station | null>(null);
@@ -167,6 +170,13 @@ function App() {
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setGuideVisible(true)}
+              title="Kullanım rehberini aç"
+              className="flex h-7 w-7 items-center justify-center rounded-full border border-surface-300/50 bg-surface-100 text-xs font-bold text-slate-400 transition hover:border-brand-500 hover:text-brand-400"
+            >
+              ?
+            </button>
             <label className="text-xs text-slate-500">Saha:</label>
             <select
               value={stationId}
@@ -224,6 +234,13 @@ function App() {
       <footer className="mx-auto mt-8 max-w-7xl border-t border-surface-300/30 pt-4 text-center text-[11px] text-slate-600">
         Prototip demo · Kişisel veri toplanmaz · Middleware CSMS'e yazmaz, sadece okur
       </footer>
+      <WelcomeGuide
+        visible={guideVisible}
+        onClose={() => {
+          markWelcomeSeen();
+          setGuideVisible(false);
+        }}
+      />
     </div>
   );
 }
