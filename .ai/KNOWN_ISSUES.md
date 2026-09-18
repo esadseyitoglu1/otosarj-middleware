@@ -1,5 +1,29 @@
 # Bilinen Sınırlar
 
+## Çözülmüş incident (referans için tutuluyor)
+**"Büyük operatör sahasında her şey 401 dönüyordu" (18 Eylül 2026).**
+Kök sebep: `packages/web/.env.production` git'e commit edilmişti
+(sadece hostname için). Sunucuda bu dosyaya elle `VITE_DEMO_HMAC_SECRET`
+eklenmişti. Sonraki bir `git push deploy` + hook'un yaptığı
+`git checkout -f`, izlenen dosyayı git'teki (secret'sız) versiyonla
+ezdi → web bundle'ı yanlış secret ile derlendi → tüm HMAC imzaları
+sunucudaki secret ile eşleşmedi → her `/api/*` isteği 401.
+
+Düzeltme: dosya `git rm --cached` ile takipten çıkarıldı,
+`.gitignore`'a eklendi. **Ayrıca** `post-receive` hook'u güncellendi —
+artık checkout öncesi bu dosyayı `/tmp`'e yedekleyip sonra geri
+koyuyor, çünkü `git checkout -f` önceden track edilmiş bir dosyayı
+ignore'a eklense bile silmeye devam eder (ignore sadece yeni dosyaları
+etkiler, geçmişi değil). Detay: commit `9bb5d9f` ve hook dosyası
+`/opt/otosarj-repo.git/hooks/post-receive` üzerindeki yorum.
+
+**Ders / genel kural:** Production-only config/secret dosyaları asla
+git'e girmemeli, sadece `.example` şablonları tutulmalı. Bir dosya
+yanlışlıkla commit edilip sonra `git rm --cached` ile çıkarılırsa,
+deploy hook'larının o dosyayı checkout'ta silmeyeceğinden ayrıca emin
+olunmalı.
+
+
 - **Araç DB statik fixture.** Gerçek ürün bakımlı bir araç veritabanı
   gerektirir (EV-Database benzeri kaynak ya da operatörün kendi girişi).
 - **Taper modeli basitleştirilmiş.** Gerçek DC şarj eğrileri araç/sıcaklık
