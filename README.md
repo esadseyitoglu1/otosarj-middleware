@@ -132,6 +132,27 @@ alan sürücü bir daha hiçbir öneriye güvenmez.
 KVKK hukuki değerlendirmesi operatörün sorumluluğundadır. "Her açıdan
 güvenli" iddia edilmiyor — kararlar ve sınırlar açıkça belirtiliyor.)*
 
+### CSMS verisi — yasal durum
+
+**CSMS** (Charge Station Management System), operatörün şarj ağını yöneten
+backend sistemidir. OtoŞarj bu sisteme **sadece okuma erişimi** ister:
+hangi soket dolu, canlı güç çekimi kaç kW. Bunun ötesinde hiçbir müdahalesi yoktur.
+
+Bu verinin kamuya açık olup olmadığı sorusu için kısa yanıt:
+
+- **Şu an Türkiye'de:** Hayır — anlık doluluk verisi operatörün özel verisidir.
+  EPDK, konum ve soket sayısı bildirimini zorunlu kılar; anlık doluluk bildirimi
+  zorunlu değildir. OtoŞarj, **B2B anlaşmayla** operatörden API erişimi alır.
+- **Gelecek (AB baskısı):** AFIR (Alternative Fuels Infrastructure Regulation, 2023),
+  2025'ten itibaren AB'deki tüm şarj noktalarını anlık doluluk verisini herkese açık
+  API üzerinden yayınlamakla yükümlü kılıyor. Türkiye AB üyesi değil, ancak
+  mevzuat uyumu stratejik öncelik listesinde.
+
+Satış argümanı açısından bu durum avantajlıdır: operatör bu veriyi zaten EPDK
+bildirimleri için topluyor; OtoŞarj sadece bu veriyi okuma erişimi karşılığında
+karar motoru sunuyor. Entegrasyon riski sıfıra yakın — operatörün altyapısına
+hiçbir şey yazılmıyor.
+
 ---
 
 ## Kurulum ve çalıştırma
