@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-surface-0 text-slate-100 antialiased;
+  font-feature-settings: 'cv11', 'ss01';
+}
+
+::selection {
+  @apply bg-brand-500/40;
+}
+
+/* Ince, marka renkli scrollbar -- demo panelinin uzun log listesi icin */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2c3a56 #111a2c;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: #111a2c;
+}
+*::-webkit-scrollbar-thumb {
+  background: #2c3a56;
+  border-radius: 8px;
+}
