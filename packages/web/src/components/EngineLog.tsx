@@ -66,6 +66,22 @@ export function EngineLog({ decision, stats }: EngineLogProps) {
                 ))}
               </ol>
             </details>
+
+            {decision.verdict === 'NUDGE' && decision.operatorImpact.kwhThroughputGainKwh > 0 && (
+              <div className="mt-4 rounded-xl border border-brand-500/20 bg-brand-500/5 p-3">
+                <p className="text-[11px] font-medium text-brand-300">
+                  Bu öneri kabul edilirse (tahmini, bu seans için)
+                </p>
+                <p className="mt-1 text-xs text-slate-300">
+                  +{decision.operatorImpact.kwhThroughputGainKwh.toFixed(1)} kWh ek satış
+                  potansiyeli · ~₺{decision.operatorImpact.revenueOpportunityTl.toFixed(0)}
+                </p>
+                <p className="mt-1.5 text-[10px] leading-relaxed text-slate-500">
+                  Güç farkı × tahmini süre × tarife ile hesaplanır. Talep/doluluk
+                  modellenmez, sahada ölçülmüş bir rakam değildir.
+                </p>
+              </div>
+            )}
           </>
         )}
 

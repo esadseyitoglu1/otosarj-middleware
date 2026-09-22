@@ -6,6 +6,23 @@
 - R2 filters candidates before scoring: strictly lower rated power and no loss in effective power. Filtering only the winning candidate could hide a suitable alternative.
 - Prepared scenarios create fresh demo sessions; manual retries retain session-based suppression. This keeps examples reproducible without changing the production suppression rule.
 
+## Operatör etkisi tahmini — koşullu geri ekleme (22 Eylül 2026)
+Kullanıcı: sabit ciro rakamının tamamen kaldırılması "business sense"i
+zayıflatıyor, bir tahmin göstermek staj değerlendirmesi açısından iyi olur.
+`EngineLog`'a (`Kararın gerekçesi` paneli) `decision.operatorImpact`'ten
+gelen kutu eklendi — ama iki koşulla:
+1. **Sadece `verdict === 'NUDGE'` VE `kwhThroughputGainKwh > 0` iken görünür.**
+   R2 senaryosunda (B) seçilen ve önerilen soketin efektif gücü aynı
+   olabiliyor (ikisi de aracın kapasitesiyle sınırlı) — bu durumda gerçek
+   kazanç "kapasitenin başka araca kalması", kWh farkı değil. Kutu o zaman
+   otomatik gizleniyor; sıfır/anlamsız rakam gösterilmiyor.
+2. Kutunun altında sabit dürüstlük notu: "Güç farkı × tahmini süre × tarife
+   ile hesaplanır. Talep/doluluk modellenmez, sahada ölçülmüş bir rakam
+   değildir." — README'deki "ölçülmedi" iddiasıyla tutarlı, rakamı gizlemek
+   yerine bağlamla birlikte gösteriyoruz.
+Playwright ile doğrulandı: Senaryo A (R1) → "+33.0 kWh · ~₺459" görünüyor;
+Senaryo B (R2) → kutu görünmüyor (gerçek davranış, bug değil).
+
 ## Presentation review sonrası düzeltme — README ve marka dili (22 Eylül 2026)
 Presentation review'u yapan ajan README'yi İngilizceye çevirmiş ve arayüzdeki
 "OtoPriz Sahası" gibi etiketleri nötr isimlere ("Paylaşımlı kabin örneği")
@@ -22,8 +39,9 @@ haline getirildi.
 - R2 filtresi (aşağıda), yanlış-pozitif önlemi
 - `NudgeModal`'a `key` prop'u (senaryo değişince state sıfırlanması, gerçek bug fix)
 - `WelcomeGuide`'ın native `<dialog>` + odak yönetimi
-- UI'dan sabit ciro rakamlarının (`+33 kWh · ~₺459`) kaldırılması, yerine
-  görece/tahmini ifadeler
+- UI'dan senaryo kartlarındaki sabit/başta hep aynı ciro rakamının kaldırılması
+  (bkz. aşağıdaki "Operatör etkisi tahmini" kararı — tamamen kaldırılmadı,
+  koşullu/dinamik hale getirildi)
 - README'deki "Prototipin sınırları" listesi (Türkçeye çevrilerek taşındı)
 - `PresentationHero` / `DecisionSummary` bileşenleri (linke tıklayan kişinin
   bağlamı hızlıca anlaması için)
