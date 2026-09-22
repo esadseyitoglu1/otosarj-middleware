@@ -20,10 +20,10 @@ export interface ScenarioDef {
 export const scenarios: ScenarioDef[] = [
   {
     id: 'A',
-    label: 'A · Power-sharing (ana senaryo)',
+    label: 'A · Gücü paylaşmak zorunda mısınız?',
     description:
-      'Kabin 1A dolu, siz 1B\'yi okutuyorsunuz. Kabin 2 tamamen boş.',
-    revenueHint: 'Nudge kabul edilirse +33 kWh · ~₺459 ciro fırsatı/seans',
+      '1A dolu, siz aynı kabindeki 1B soketini seçiyorsunuz. Yan kabin ise tamamen boş.',
+    revenueHint: 'Daha uygun soketi ve tahmini süre farkını görün.',
     stationId: 'otopriz-taspinar-benzeri',
     vehicleProfileId: 'togg-t10x-rwd',
     scannedEvseId: '1B',
@@ -32,20 +32,21 @@ export const scenarios: ScenarioDef[] = [
   },
   {
     id: 'B',
-    label: 'B · Kapasite aşırı-tahsisi',
+    label: 'B · Aynı hız, daha uygun soket',
     description:
-      'Büyük operatör sahasında bir PHEV (50 kW), 300 kW\'lık soketi seçiyor.',
-    revenueHint: '300 kW soket boşa çalışıyor → yüksek güçlü araç için serbest kalır',
+      '50 kW kapasiteli bir araç, 300 kW soketi seçiyor. Daha düşük güçlü boş seçenekler var.',
+    revenueHint: 'Yüksek güçlü soket başka bir araca kalabilir.',
     stationId: 'buyuk-operator-ornek',
-    vehicleProfileId: 'toyota-prius-phev',
+    vehicleProfileId: 'renault-zoe',
     scannedEvseId: 'ultra-1',
     expectedRule: 'R2',
   },
   {
     id: 'C',
-    label: 'C · Doğru seçim (negatif kontrol)',
+    label: 'C · Seçim zaten uygunsa?',
     description:
-      'IONIQ 5, boş bir 180 kW sokete takıyor. Motor sessiz kalmalı.',
+      'Araç, boş bir kabindeki uygun soketi seçiyor. Daha iyi alternatif yoksa öneri gösterilmez.',
+    revenueHint: 'Gereksiz uyarı yok; sürücü yoluna devam eder.',
     stationId: 'otopriz-taspinar-benzeri',
     vehicleProfileId: 'ioniq-5',
     scannedEvseId: '2A',

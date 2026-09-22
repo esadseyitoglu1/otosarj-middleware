@@ -22,9 +22,10 @@ export function buildNudgeMessageR1(
   const kwRecommended = Math.round(recommendedEffectiveKw);
   const meters = Math.round(walkingDistanceM);
   return (
-    `Dikkat: Bu sokete takarsaniz hiziniz ${kwSelected} kW'a bolunecek. ` +
-    `${meters} metre yaninizdaki bos ${recommendedEvseId} kabinine gecerek ` +
-    `${kwRecommended} kW tam guçle sarj olabilirsiniz. Tercih sizin.`
+    `Bu soket gücü başka bir araçla paylaşıyor. Model tahmini: burada ${kwSelected} kW, ` +
+    `boş ${recommendedEvseId} soketinde ${kwRecommended} kW. ` +
+    `Aracınızı yaklaşık ${meters} metre ilerideki bu sokete alarak daha hızlı şarj olabilirsiniz. ` +
+    `Gerçek güç araç ve saha koşullarına bağlıdır. Tercih sizin.`
   );
 }
 
@@ -38,17 +39,18 @@ export function buildNudgeMessageR2(
   const meters = Math.round(walkingDistanceM);
   const kwRecommended = Math.round(recommendedEffectiveKw);
   return (
-    `Bilginize: araciniz en fazla ${Math.round(vehicleMaxKw)} kW cekebiliyor, ` +
-    `bu soket ise ${Math.round(selectedRatedKw)} kW. Ayni surede sarj olup ` +
-    `${meters} metre yaninizdaki ${recommendedEvseId} kabinini bosaltabilir, ` +
-    `arkanizdaki suruculere de yer acabilirsiniz (o kabin ${kwRecommended} kW veriyor). Tercih sizin.`
+    `Aracınızın azami DC şarj gücü ${Math.round(vehicleMaxKw)} kW; seçtiğiniz soket ${Math.round(selectedRatedKw)} kW. ` +
+    `Aracınızı yaklaşık ${meters} metre ilerideki daha düşük kapasiteli ${recommendedEvseId} soketine alabilirsiniz. ` +
+    `Modele göre orada da ${kwRecommended} kW ile şarj süreniz uzamaz; ` +
+    `böylece seçtiğiniz yüksek güçlü soket diğer sürücülere kalır. ` +
+    `Gerçek güç araç ve saha koşullarına bağlıdır. Tercih sizin.`
   );
 }
 
 export function buildProceedMessage(): string {
-  return 'Seciminiz uygun. Iyi sarjlar.';
+  return 'Bu koşullarda başka bir soket önerimiz yok. İyi şarjlar.';
 }
 
 export function buildBlockMessage(connectorType: string): string {
-  return `Bu soket aracinizin konnektor tipiyle (${connectorType}) uyumlu degil.`;
+  return `Bu soketin ${connectorType} bağlantısı aracınızla uyumlu değil.`;
 }

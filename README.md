@@ -5,10 +5,17 @@ Sürücüye yeni bir uygulama yükletmeden, DC hızlı şarj istasyonlarındaki
 öneren bir karar motoru ve middleware API prototipi.
 
 **🔗 Canlı demo:** https://otopriz.esadseyitoglu.xyz
+**🔗 Diğer proje:** [TurbineTwin](http://turbinetwin.esadseyitoglu.xyz) — rüzgar türbini anomali tespiti
 
 > **Bağlam:** Bu proje, Türkiye'deki şarj ağı operatörü **OtoPriz**'e
 > (Eksim Holding) staj başvurusu için hazırlanan çalışan bir prototiptir.
 > Amaç, sahada gerçekten yaşanan iki verimsizliği somut kodla göstermek.
+>
+> API ve karar motoru gerçek ve çalışıyor; saha durumu (soket doluluğu,
+> canlı güç) simüle edilmiş, araç profilleri örnek amaçlı, şarj süresi
+> tahminleri basitleştirilmiş bir modele dayanıyor. Bu resmi bir OtoPriz
+> ürünü ya da canlı bir operatör entegrasyonu değil — OtoPriz'in gerçek
+> sahasına bağlanmaya hazır bir prototip.
 
 ---
 
@@ -41,14 +48,28 @@ tam bu iki deneyimi anlattığı kamuoyu videosu:
 Sürücü operatörün **kendi** uygulamasından bir soketin QR kodunu
 okuttuğunda, bu middleware kullanıcının araç profilini, seçilen soketin
 durumunu ve sahadaki diğer soketlerin canlı yükünü analiz eder. Seçim
-verimsizse, ekranda kullanıcı dostu bir öneri belirir:
+verimsizse, ekranda kullanıcı dostu bir öneri belirir — sürücü isterse
+kabul eder, isterse mevcut seçimiyle devam eder. **Zorlama yok, sıfır
+ekstra uygulama, sıfır donanım değişikliği.**
 
-> *"Dikkat: Bu sokete takarsanız hızınız 90 kW'a bölünecek. 3 metre
-> yanınızdaki boş 2A kabinine geçerek 180 kW tam güçle 2 kat hızlı şarj
-> olabilirsiniz. Tercih sizin."*
+Potansiyel fayda daha kısa şarj süreleri ve daha iyi kapasite dağılımı;
+**ne saha tasarrufu ne de ek ciro şu ana kadar ölçülmedi** — bu aşağıda
+dürüstçe belirtiliyor.
 
-Zorlama yok — sürücü isterse öneriyi kabul eder, isterse mevcut seçimiyle
-devam eder. **Sıfır ekstra uygulama, sıfır donanım değişikliği.**
+## Bir dakikada deneyin
+
+1. **"Örneği çalıştır"**a ya da **A** senaryosuna tıklayın. Sürücü,
+   dolu ve güç-paylaşımlı bir kabinin ikinci soketini seçerken, yan
+   kabin tamamen boş.
+2. Sonucu okuyun: seçilen vs. önerilen güç, tahmini süre farkı, önerilen
+   soket. Saha haritası ve telefon aynı kararı gösterir.
+3. **B**'yi deneyin: düşük güçlü bir araç, aynı tahmini hızda daha düşük
+   güçlü bir sokete yönlendirilir; yüksek kapasiteli ekipman serbest kalır.
+4. **C**'yi deneyin: seçim zaten uygunsa motor gereksiz uyarı vermez.
+
+Her hazır senaryo temiz bir demo oturumuyla başlar. Öneriyi kabul/reddedebilir,
+araç ve şarj seviyesi seçip boş bir soketi kendiniz de okutabilirsiniz.
+Teknik gerekçe "Teknik karar adımları" panelinde adım adım görünür.
 
 ---
 
@@ -80,10 +101,14 @@ devam eder. **Sıfır ekstra uygulama, sıfır donanım değişikliği.**
 - **`packages/engine`** — Bu projenin gerçek IP'si. Saf TypeScript, hiçbir
   framework'e bağımlı değil, tamamen unit-test'li. `decide()` fonksiyonu
   bir `ScanInput` alır, açıklanabilir bir `Decision` döner.
-- **`packages/server`** — Express tabanlı API katmanı. Operatörün mevcut
-  QR akışına takılacak `POST /api/v1/scan` uç noktasını sunar.
-- **`packages/web`** — İnteraktif simülatör. Sahayı, sürücü telefonunu ve
-  motorun karar sürecini canlı gösterir (demo amaçlı).
+- **`packages/server`** — Express tabanlı API katmanı. İmzalı demo istekleri,
+  doğrulama, rate limit, read-only adapter arayüzü, tercih telemetrisi.
+  Operatörün mevcut QR akışına takılacak `POST /api/v1/scan` uç noktasını sunar.
+- **`packages/web`** — İnteraktif simülatör. Hazır senaryolar, saha haritası,
+  sürücü ekranı, sonuç özeti, genişletilebilir gerekçe paneli.
+
+Karar mantığı ayrı bir pakette yaşıyor ve API üzerinden çağrılıyor — frontend'e
+gömülü senaryo cevapları değil.
 
 ### Neden `engine` ayrı bir paket?
 
@@ -99,7 +124,8 @@ modülünü/kabini paylaşıyor" bilgisi **standart bir alan değil.** Bu proje
 bu boşluğu `PowerSharingGroup` tipiyle dolduruyor — motor bu bilgiyi
 kullanarak "1B'ye takarsan gücün 1A ile bölünecek" hesabını yapabiliyor.
 Bu aynı zamanda gerçek dünyada en büyük entegrasyon sürtünmesi: her
-sahanın topolojisi elle tanımlanmalı.
+sahanın topolojisi elle tanımlanmalı. Gerçek bir dağıtım, bu eşlemeyi ve
+güncel saha durumunu bir operatör adaptörü üzerinden sağlamalıdır.
 
 ## Kural motoru
 
@@ -108,7 +134,7 @@ sahanın topolojisi elle tanımlanmalı.
 | Kural | Ne yapar |
 |---|---|
 | **R1** | Power-sharing çakışması — paylaşımlı kabinde komşu soket doluyken daha iyi bir alternatif varsa öner (**ana senaryo**) |
-| **R2** | Kapasite aşırı-tahsisi — soket/araç güç oranı eşiği aşınca (oran-bazlı, sabit bir kW rakamına değil) öner |
+| **R2** | Kapasite aşırı-tahsisi — yalnızca *gerçekten daha düşük nominal güçlü* bir soket, en az aynı tahmini efektif gücü veriyorsa öner (oran-bazlı eşik, sabit bir kW rakamına değil) |
 | **R3** | Konnektör uyumsuzluğu — sert engel, `BLOCK` döner |
 | **R4** | Seçim zaten optimal veya alternatif yok — motor sessiz kalır |
 | **R5** | Suppression — aynı uyarı aynı oturumda daha önce reddedildiyse tekrar gösterilmez |
@@ -116,6 +142,11 @@ sahanın topolojisi elle tanımlanmalı.
 R4 kasıtlı olarak önemli: motor **yanlış-pozitif üretmemeli.** Doğru
 seçim yapan bir sürücü hiçbir uyarı görmez — bir kere gereksiz uyarı
 alan sürücü bir daha hiçbir öneriye güvenmez.
+
+R2'nin "gerçekten daha düşük nominal güçlü" şartı sonradan eklendi: başta
+sadece efektif gücün eşit/daha iyi olması yeterliydi, bu da aynı güçteki
+iki soket arasında bile anlamsız bir "taşı" önerisi üretebiliyordu — artık
+alternatif hem nominal olarak düşük hem en az aynı hızı vermek zorunda.
 
 ## Güvenlik ilkeleri
 
@@ -130,7 +161,10 @@ alan sürücü bir daha hiçbir öneriye güvenmez.
 
 *(Prototip kapsamı: penetrasyon testi yapılmadı, mTLS simüle edilmiştir,
 KVKK hukuki değerlendirmesi operatörün sorumluluğundadır. "Her açıdan
-güvenli" iddia edilmiyor — kararlar ve sınırlar açıkça belirtiliyor.)*
+güvenli" iddia edilmiyor — kararlar ve sınırlar açıkça belirtiliyor. Demo
+ortamında HMAC imzalama tarayıcıda çalışıyor — bu yüzden demo secret'ı
+production secret'ı ya da bir güvenlik sınırı değil. Gerçek dağıtımda
+imzalama operatörün kendi backend'inde yapılmalı.)*
 
 ### CSMS verisi — yasal durum
 
@@ -157,28 +191,69 @@ hiçbir şey yazılmıyor.
 
 ## Kurulum ve çalıştırma
 
+Node.js ve npm gerekli. Repo kökünden:
+
 ```bash
 npm install
-
-# Motor testlerini çalıştır
-npm run test --workspace=packages/engine
-
-# Motoru derle (tip kontrolü dahil)
 npm run build --workspace=packages/engine
+```
 
-# Server + web birlikte (Aşama 1 tamamlandığında)
-npm run dev
+Ayrı terminallerde çalıştırın:
+
+```bash
+npm run dev:server
+npm run dev:web
+```
+
+http://localhost:5173 adresini açın. Yerel API varsayılan olarak
+http://localhost:3001'de.
+
+Doğrulama:
+
+```bash
+npm test
+npm run build
 ```
 
 ## Proje durumu
 
-- ✅ **`packages/engine`** — tamamlandı, 25/25 test yeşil
-- ✅ **`packages/server`** — API katmanı tamam, 15/15 test yeşil, canlı yayında
-- ✅ **`packages/web`** — interaktif simülatör tamam, canlı yayında
+- ✅ **`packages/engine`** — tamamlandı, **30/30 test yeşil**
+- ✅ **`packages/server`** — API katmanı tamam, **15/15 test yeşil**, canlı yayında
+- ✅ **`packages/web`** — interaktif simülatör tamam, canlı yayında; production
+  build'i ayrıca bir TypeScript tip kontrolünden geçiyor
 - 📋 **`docs/business/`** — ROI modeli, SWOT, pitch deck
 - 📋 **`docs/technical/`** — mimari, OCPP/OCPI entegrasyon, mevzuat analizi
 
 Güncel durum ve sıradaki adımlar için `.ai/STATE.md` ve `.ai/NEXT.md`.
+
+---
+
+## Prototipin sınırları
+
+Dürüstçe belirtilmesi gereken, henüz çözülmemiş noktalar:
+
+- **Tarihsel/simüle örnekler gerçek performansı kanıtlamaz.** Gerçek şarj
+  batarya durumuna, sıcaklığa ve donanım tahsisine göre değişir.
+- **Kapsam bir saha, bir operatör, ortak bir tarife varsayımıyla sınırlı.**
+  Çapraz-operatör yönlendirme ve fiyat optimizasyonu gelecek iş (Faz 2).
+- **Adapter arayüzü şarj başlatamaz/durduramaz, güç değiştiremez.** Gerçek
+  entegrasyon ayrıca kimlik doğrulama, güncel veri, hata yönetimi ve
+  operatör tarafında bir fallback gerektirir.
+- **Demo'da HMAC imzalama tarayıcıda çalışıyor.** Bu yüzden demo secret'ı
+  production secret'ı ya da bir güvenlik sınırı değil — gerçek imzalama
+  operatörün backend'ine ait olmalı. Penetrasyon ve yük testi yapılmadı.
+- **Operatör etkisi hesabı basitleştirilmiş bir model** (güç farkı × süre ×
+  tarife). Ek talebi, gerçekleşen satışı veya kârı ölçmüyor — bu yüzden
+  arayüzde bilinçli olarak bir ciro vaadi gibi sunulmuyor.
+- **R1'de şu an minimum bir zaman-kazancı eşiği yok** — sürücünün yer
+  değiştirme zahmeti hesaba katılmıyor; saha pilotu öncesi ele alınmalı.
+
+## Sıradaki doğrulama adımı
+
+Read-only bir operatör veri kaynağına bağlanmak, kabin topolojisini ve
+araç profillerini doğrulamak, sonra küçük bir pilot sahada öneri kabul
+oranını ve gerçek zaman kazancını ölçmek. Asıl anlamlı kanıt o pilottan
+gelecek.
 
 ---
 

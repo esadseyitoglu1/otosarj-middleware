@@ -6,10 +6,16 @@ interface EngineLogProps {
 }
 
 const RULE_LABELS: Record<string, string> = {
-  R1: 'R1 · Power-sharing çakışması',
-  R2: 'R2 · Kapasite aşırı-tahsisi',
-  R3: 'R3 · Konnektör uyumsuzluğu',
-  R5: 'R5 · Suppression (tekrar uyarmama)',
+  R1: 'Seçilen soket başka bir araçla güç paylaşıyor.',
+  R2: 'Daha düşük kapasiteli bir soket de aracın ihtiyacını karşılayabiliyor.',
+  R3: 'Soketin bağlantı tipi bu araçla uyumlu değil.',
+  R5: 'Reddedilen öneri bu oturumda tekrar gösterilmiyor.',
+};
+
+const VERDICT_LABELS: Record<Decision['verdict'], string> = {
+  NUDGE: 'Alternatif soket önerisi',
+  BLOCK: 'Uyumsuz bağlantı',
+  PROCEED: 'Ek yönlendirme yok',
 };
 
 function verdictBadge(verdict: Decision['verdict']) {
@@ -24,82 +30,67 @@ function verdictBadge(verdict: Decision['verdict']) {
 }
 
 export function EngineLog({ decision, stats }: EngineLogProps) {
-  const acceptRate =
-    stats.shown > 0 ? Math.round((stats.accepted / stats.shown) * 100) : null;
-
   return (
-    <div className="rounded-2xl border border-surface-300/50 bg-surface-50 p-5">
-      <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-400">
-        Karar Motoru
-      </h2>
+    <div className="space-y-4">
+      <section className="rounded-2xl border border-surface-300/50 bg-surface-50 p-5" aria-labelledby="decision-reason-title">
+        <h2 id="decision-reason-title" className="mb-4 text-sm font-semibold text-slate-200">
+          Kararın gerekçesi
+        </h2>
 
-      {!decision ? (
-        <p className="text-xs text-slate-500">
-          Sürücü telefonundan bir soket okutun — motorun kararı ve gerekçeleri burada
-          adım adım görünecek.
-        </p>
-      ) : (
-        <>
-          <div className="mb-3 flex items-center gap-2">
-            <span
-              className={`rounded-md border px-2 py-0.5 text-[11px] font-semibold ${verdictBadge(decision.verdict)}`}
-            >
-              {decision.verdict}
+        {!decision ? (
+          <p className="text-xs leading-relaxed text-slate-400">
+            Bir senaryo çalıştırın veya sürücü ekranından soket seçin.
+            Önerinin hangi koşullara dayandığını burada görebilirsiniz.
+          </p>
+        ) : (
+          <>
+            <span className={`inline-block rounded-md border px-2 py-1 text-[11px] font-semibold ${verdictBadge(decision.verdict)}`}>
+              {VERDICT_LABELS[decision.verdict]}
             </span>
             {decision.triggeredRule && (
-              <span className="text-[11px] text-slate-400">
+              <p className="mt-3 text-xs leading-relaxed text-slate-400">
                 {RULE_LABELS[decision.triggeredRule] ?? decision.triggeredRule}
-              </span>
+              </p>
             )}
+
+            <details className="mt-4 rounded-xl bg-surface-0/60 p-3">
+              <summary className="cursor-pointer text-xs font-medium text-slate-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-400">
+                Teknik karar adımları
+              </summary>
+              <ol className="mt-3 space-y-2">
+                {decision.reasoning.map((step, i) => (
+                  <li key={i} className="flex gap-2 text-[11px] leading-relaxed text-slate-400">
+                    <span className="shrink-0 text-slate-500">{i + 1}.</span>
+                    <span className="min-w-0 break-words">{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </details>
+          </>
+        )}
+
+        <div className="mt-4 border-t border-surface-300/30 pt-3">
+          <p className="mb-2 text-[11px] text-slate-500">Bu demo oturumundaki öneriler</p>
+          <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-slate-400">
+            <span>Gösterilen: {stats.shown}</span>
+            <span>Kabul: {stats.accepted}</span>
+            <span>Ret: {stats.declined}</span>
           </div>
-
-          <div className="mb-3 space-y-1.5 rounded-xl bg-surface-0/60 p-3">
-            {decision.reasoning.map((step, i) => (
-              <div key={i} className="flex gap-2 text-[11px] leading-relaxed text-slate-400">
-                <span className="text-slate-600">{String(i + 1).padStart(2, '0')}</span>
-                <span>{step}</span>
-              </div>
-            ))}
-          </div>
-
-          {decision.verdict === 'NUDGE' && decision.operatorImpact.revenueOpportunityTl > 0 && (
-            <div className="mb-3 grid grid-cols-2 gap-2 rounded-xl border border-brand-700/30 bg-brand-950/20 p-3">
-              <div>
-                <div className="text-[10px] uppercase tracking-wide text-slate-500">
-                  Ek kWh potansiyeli
-                </div>
-                <div className="text-sm font-bold text-brand-400">
-                  +{decision.operatorImpact.kwhThroughputGainKwh.toFixed(1)} kWh
-                </div>
-              </div>
-              <div>
-                <div className="text-[10px] uppercase tracking-wide text-slate-500">
-                  Ciro fırsatı
-                </div>
-                <div className="text-sm font-bold text-brand-400">
-                  ₺{decision.operatorImpact.revenueOpportunityTl.toFixed(0)}
-                </div>
-              </div>
-            </div>
-          )}
-        </>
-      )}
-
-      <div className="mt-4 border-t border-surface-300/30 pt-3">
-        <div className="mb-1.5 text-[10px] uppercase tracking-wide text-slate-500">
-          Bu oturumda gösterilen öneriler
         </div>
-        <div className="flex items-center gap-4 text-xs text-slate-400">
-          <span>Gösterilen: {stats.shown}</span>
-          <span>Kabul: {stats.accepted}</span>
-          <span>Red: {stats.declined}</span>
-          {acceptRate !== null && (
-            <span className="ml-auto rounded-md bg-surface-100 px-2 py-0.5 text-brand-400">
-              %{acceptRate} kabul
-            </span>
-          )}
-        </div>
-      </div>
+      </section>
+
+      <section className="rounded-2xl border border-surface-300/40 p-5" aria-labelledby="demo-scope-title">
+        <h2 id="demo-scope-title" className="mb-3 text-sm font-semibold text-slate-300">Bu demo neyi gösteriyor?</h2>
+        <p className="text-xs leading-relaxed text-slate-400">
+          Kararlar çalışan bir API üzerinden üretiliyor. İstasyon, araç ve doluluk
+          bilgileri örnek veriler; güç ve süreler model tahmini.
+        </p>
+        <p className="mt-2 text-xs leading-relaxed text-slate-400">
+          Canlı bir şarj ağına bağlantı yok. Sahada kullanım için operatörün
+          istasyon yönetim sistemiyle (CSMS) veri entegrasyonu ve gerçek
+          koşullarda doğrulama gerekiyor.
+        </p>
+      </section>
     </div>
   );
 }

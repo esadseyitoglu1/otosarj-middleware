@@ -75,20 +75,104 @@ describe('decide - R2 kapasite asiri-tahsisi', () => {
     expect(result.recommended).not.toBeNull();
   });
 
-  it('OtoPriz sahasinda 50 kW arac 120 kW sokete takarsa da R2 tetiklenir (oran-bazli, sabit rakam degil)', () => {
-    // Bu test, R2'nin "300 kW" gibi sabit bir sayiya degil,
-    // soket/arac oranina dayandigini kanitlar -- kullanici notu:
-    // "300 bir ornekti, muhabbet az cekenin cok vereni isgali".
-    const vehicle = findVehicleById('toyota-prius-phev')!; // 50 kW
+  it('120 kW soket icin de daha dusuk kapasiteli uygun alternatif varsa R2 tetiklenir', () => {
+    const vehicle = findVehicleById('toyota-prius-phev')!;
+    const station = {
+      ...otoprizStation,
+      evses: [
+        ...otoprizStation.evses,
+        { ...otoprizStation.evses.find((e) => e.id === '3')!, id: 'lower', ratedPowerKw: 60 },
+      ],
+    };
     const result = decide({
-      input: baseInput({ scannedEvseId: '3' }), // 120 kW bagimsiz soket
-      station: otoprizStation,
+      input: baseInput({ scannedEvseId: '3' }),
+      station,
       vehicle,
       suppressionHistory: [],
     });
 
     expect(result.verdict).toBe('NUDGE');
     expect(result.triggeredRule).toBe('R2');
+    expect(result.recommended?.evseId).toBe('lower');
+    expect(result.recommended?.effectivePowerKw).toBe(50);
+  });
+
+  it.each([300, 350])('yalnizca ayni veya daha yuksek nominal guclu alternatif (%i kW) varsa yonlendirmez', (ratedPowerKw) => {
+    const selected = largeOperatorStation.evses.find((e) => e.id === 'ultra-1')!;
+    const station = {
+      ...largeOperatorStation,
+      evses: [selected, { ...selected, id: 'alternative', ratedPowerKw }],
+    };
+    const result = decide({
+      input: baseInput({ stationId: station.id, scannedEvseId: selected.id }),
+      station,
+      vehicle: findVehicleById('toyota-prius-phev')!,
+      suppressionHistory: [],
+    });
+
+    expect(result.verdict).toBe('PROCEED');
+    expect(result.recommended).toBeNull();
+  });
+
+  it('yakin ama ayni kapasiteli aday yerine daha uzaktaki dusuk kapasiteli uygun soketi bulur', () => {
+    const station = {
+      ...largeOperatorStation,
+      evses: largeOperatorStation.evses.map((e) =>
+        e.id === 'ultra-2'
+          ? { ...e, status: 'available' as const, liveDrawKw: null, walkingDistanceM: 0 }
+          : e
+      ),
+    };
+    const result = decide({
+      input: baseInput({ stationId: station.id, scannedEvseId: 'ultra-1' }),
+      station,
+      vehicle: findVehicleById('toyota-prius-phev')!,
+      suppressionHistory: [],
+    });
+
+    expect(result.triggeredRule).toBe('R2');
+    expect(result.recommended?.evseId).toBe('fast-1');
+    expect(result.recommended?.effectivePowerKw).toBe(result.selected.effectivePowerKw);
+  });
+
+  it('dusuk nominal guclu ama daha yavas adayi elemeden puanlayip gecerli alternatifi kacirmaz', () => {
+    const selected = largeOperatorStation.evses.find((e) => e.id === 'ultra-1')!;
+    const station = {
+      ...largeOperatorStation,
+      evses: [
+        selected,
+        { ...selected, id: 'near-slow', ratedPowerKw: 40, walkingDistanceM: 0 },
+        { ...selected, id: 'far-suitable', ratedPowerKw: 120, walkingDistanceM: 100 },
+      ],
+    };
+    const result = decide({
+      input: baseInput({ stationId: station.id, scannedEvseId: selected.id }),
+      station,
+      vehicle: findVehicleById('toyota-prius-phev')!,
+      suppressionHistory: [],
+    });
+
+    expect(result.triggeredRule).toBe('R2');
+    expect(result.recommended?.evseId).toBe('far-suitable');
+    expect(result.recommended?.effectivePowerKw).toBe(50);
+  });
+
+  it('dusuk kapasiteli alternatif daha yavas olacaksa yonlendirmez', () => {
+    const station = {
+      ...largeOperatorStation,
+      evses: largeOperatorStation.evses.map((e) =>
+        e.id === 'fast-1' ? { ...e, ratedPowerKw: 40 } : e
+      ),
+    };
+    const result = decide({
+      input: baseInput({ stationId: station.id, scannedEvseId: 'ultra-1' }),
+      station,
+      vehicle: findVehicleById('toyota-prius-phev')!,
+      suppressionHistory: [],
+    });
+
+    expect(result.verdict).toBe('PROCEED');
+    expect(result.recommended).toBeNull();
   });
 
   it('alternatif yoksa (hepsi dolu/uyumsuz) nudge verilmemeli -- bosuna rahatsiz etmeme', () => {

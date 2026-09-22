@@ -1,5 +1,13 @@
 # Sıradaki İşler (öncelik sırasıyla)
 
+0. **Deploy et:** Görsel doğrulama tamamlandı (Playwright, 7 ekran
+   görüntüsü, hiç hata yok), README/marka dili Türkçe'ye geri döndürüldü,
+   testler yeşil (engine 30/30, server 15/15). Sırada: commit → GitHub
+   push → sunucuya deploy (`.ai/STATE.md`'deki elle deploy adımları) →
+   canlı URL'de A/B/C senaryolarını tekrar doğrula.
+   - Saha pilotu öncesi: R1 için minimum zaman-kazancı eşiği değerlendir,
+     eşzamanlı ziyaretçiler için mock saha state'ini izole et.
+
 1. **Aşama 2 — docs/business/**: ROI modeli (3 senaryo, peak/off-peak
    ayrımlı, 4 kalem), SWOT, pitch deck (Artifact ile web tabanlı).
    Pitch'in açılışında kamuoyu kanıtı olarak kullanılacak:

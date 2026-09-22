@@ -5,6 +5,7 @@ interface NudgeModalProps {
   decision: Decision;
   onAccept: () => void;
   onDecline: (reason?: DeclineReason) => void;
+  busy?: boolean;
 }
 
 const DECLINE_REASONS: { id: DeclineReason; label: string }[] = [
@@ -14,7 +15,7 @@ const DECLINE_REASONS: { id: DeclineReason; label: string }[] = [
   { id: 'other', label: 'Diğer' },
 ];
 
-export function NudgeModal({ decision, onAccept, onDecline }: NudgeModalProps) {
+export function NudgeModal({ decision, onAccept, onDecline, busy = false }: NudgeModalProps) {
   const [showReasons, setShowReasons] = useState(false);
 
   if (decision.verdict === 'PROCEED') return null;
@@ -23,7 +24,7 @@ export function NudgeModal({ decision, onAccept, onDecline }: NudgeModalProps) {
 
   return (
     <div className="absolute inset-0 z-20 flex items-end justify-center bg-black/60 backdrop-blur-sm rounded-[2.5rem]">
-      <div className="w-full animate-slideUp rounded-t-3xl border-t border-surface-300/50 bg-surface-50 p-5 pb-6">
+      <div className="max-h-full w-full animate-slideUp overflow-y-auto rounded-t-3xl border-t border-surface-300/50 bg-surface-50 p-5 pb-6">
         <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-surface-300" />
 
         <div className="mb-3 flex items-center gap-2">
@@ -35,7 +36,7 @@ export function NudgeModal({ decision, onAccept, onDecline }: NudgeModalProps) {
             {isBlock ? '⛔' : '⚡'}
           </span>
           <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-            {isBlock ? 'Uyumsuz Soket' : `Öneri · Kural ${decision.triggeredRule}`}
+            {isBlock ? 'Uyumsuz soket' : 'Daha uygun bir seçenek var'}
           </span>
         </div>
 
@@ -49,7 +50,7 @@ export function NudgeModal({ decision, onAccept, onDecline }: NudgeModalProps) {
                 {decision.selected.effectivePowerKw.toFixed(0)} kW
               </div>
               <div className="text-[10px] text-slate-500">
-                ~{decision.selected.estMinutesTo80} dk
+                %80'e ~{decision.selected.estMinutesTo80} dk
               </div>
             </div>
             <div>
@@ -58,7 +59,7 @@ export function NudgeModal({ decision, onAccept, onDecline }: NudgeModalProps) {
                 {decision.recommended.effectivePowerKw.toFixed(0)} kW
               </div>
               <div className="text-[10px] text-brand-400/70">
-                ~{decision.recommended.estMinutesTo80} dk
+                %80'e ~{decision.recommended.estMinutesTo80} dk
               </div>
             </div>
           </div>
@@ -69,13 +70,15 @@ export function NudgeModal({ decision, onAccept, onDecline }: NudgeModalProps) {
             {!isBlock && decision.recommended && (
               <button
                 onClick={onAccept}
+                disabled={busy}
                 className="rounded-xl bg-brand-500 py-3 text-sm font-semibold text-surface-0 transition hover:bg-brand-400 active:scale-[0.98]"
               >
-                {decision.recommended.evseId} kabinine geç
+                {decision.recommended.evseId} soketini seç
               </button>
             )}
             <button
               onClick={() => (isBlock ? onDecline() : setShowReasons(true))}
+              disabled={busy}
               className="rounded-xl border border-surface-300/50 py-3 text-sm text-slate-300 transition hover:bg-surface-100 active:scale-[0.98]"
             >
               {isBlock ? 'Anladım' : 'Yine de buraya takacağım'}
@@ -89,6 +92,7 @@ export function NudgeModal({ decision, onAccept, onDecline }: NudgeModalProps) {
             {DECLINE_REASONS.map((r) => (
               <button
                 key={r.id}
+                disabled={busy}
                 onClick={() => onDecline(r.id)}
                 className="rounded-lg border border-surface-300/40 py-2 text-left text-xs text-slate-300 transition hover:bg-surface-100"
               >

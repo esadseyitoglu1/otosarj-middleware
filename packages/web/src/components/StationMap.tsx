@@ -26,7 +26,7 @@ function statusColor(status: string): string {
 export function StationMap({ station, layout, selectedEvseId, recommendedEvseId }: StationMapProps) {
   return (
     <div className="rounded-2xl border border-surface-300/50 bg-surface-50 p-5">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
           Saha Görünümü
         </h2>
@@ -48,7 +48,7 @@ export function StationMap({ station, layout, selectedEvseId, recommendedEvseId 
                   : 'border-surface-300/40 bg-surface-100/40'
               }`}
             >
-              <div className="mb-2 flex items-center justify-between">
+              <div className="mb-2 flex flex-wrap items-center justify-between gap-1">
                 <span className="text-xs font-medium text-slate-300">{cabinet.label}</span>
                 <span className="text-[10px] text-slate-500">
                   {cabinet.maxKw} kW {cabinet.shared ? '· paylaşımlı' : ''}

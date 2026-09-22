@@ -1,7 +1,36 @@
 # Mevcut Durum
 
+## Presentation review + gözden geçirme tamamlandı — 22 Eylül 2026
+Başka bir ajan bir "presentation review" yaptı (R2 düzeltmesi, ciro
+rakamlarının kaldırılması, hero/decision-summary bileşenleri, native
+dialog); commit/push/deploy yapmadan bıraktı. Claude bu değişiklikleri
+gözden geçirdi:
+- **Kabul edilenler (gerçek iyileştirme):** R2 filtresi (aşağıda detay),
+  `NudgeModal` key prop'u (gerçek bug fix — senaryo değişince modal state'i
+  artık sıfırlanıyor), native `<dialog>` + odak yönetimi, sabit ciro
+  rakamlarının kaldırılması, `PresentationHero`/`DecisionSummary`
+  bileşenleri, TurbineTwin footer linki, race-condition fix
+  (`stationRequest.current`), accept/decline'a hata yakalama.
+- **Geri alınan:** README'nin İngilizceye çevrilmesi ve arayüzdeki
+  "OtoPriz Sahası" gibi etiketlerin nötr isimlere değiştirilmesi.
+  Kullanıcı kararı: WhatsApp'tan Türkçe bilgilendirilecek, link de aynı
+  dilde aynı sıcak anlatıyı sürdürmeli. Detay: `.ai/DECISIONS.md`
+  "Presentation review sonrası düzeltme".
+- **Görsel doğrulama:** Playwright ile localde 7 ekran görüntüsü alındı
+  (hero, welcome guide/dialog, senaryo A/B/C, teknik detaylar açık,
+  mobil 390px) — hiç console/page error yok, tüm senaryolar doğru
+  render ediyor. Önceki `.ai/KNOWN_ISSUES.md`'deki "browser mevcut değildi"
+  notu artık geçersiz.
+- **Test durumu:** engine 30/30, server 15/15, web production build
+  (tip kontrolü dahil) temiz.
+- **`.presentation-work/` dizini silindi** (repo kökünde durmamalıydı;
+  içindeki `verify-oto.mjs` scratchpad'e taşındı, `TurbineTwin/` kopyası
+  gereksizdi çünkü asıl proje `C:\Users\Monster\Desktop\TurbineTwin`'de
+  zaten güncel).
+- **Henüz yapılmadı:** local değişiklikler commit/push/deploy edilmedi.
+
 ## Çalışan
-- **packages/engine tamamlandı.** 25/25 test yeşil. R1-R5 kuralları,
+- **packages/engine tamamlandı.** 30/30 test yeşil. R1-R5 kuralları,
   iki saha fixture'ı, taper modelli süre tahmini.
 - **packages/server tamamlandı.** 15/15 test yeşil. HMAC imzalı API
   (`POST /api/v1/scan` vb.), rate limit, input validation, read-only

@@ -212,12 +212,13 @@ export function decide(params: DecideParams): Decision {
     reasoning.push(
       `Soket/arac guc orani ${overProvisionRatio.toFixed(1)}x (esik: ${OVER_PROVISION_RATIO_THRESHOLD}x) -> asiri-tahsis supheli.`
     );
-    const alternative = findBestAlternative(station, vehicle, evse.id);
-    // R2'de alternatifin mutlaka DAHA YUKSEK guc vermesi sart degil --
-    // amac ayni suredeki fırsat maliyetini azaltmak, aracin zaten
-    // maxDcPowerKw ile sinirlandigi icin alternatif de en az ayni hizi
-    // verirse yeterli (soket israfini onler).
-    if (alternative && alternative.effectivePowerKw >= selectedEffectiveKw) {
+    // R2 ancak daha dusuk nominal guclu bir soket en az ayni efektif
+    // gucu sagliyorsa yararlidir. Bu kosullar skorlama oncesinde uygulanir.
+    const alternative = findBestAlternative(station, vehicle, evse.id, {
+      ratedPowerBelowKw: evse.ratedPowerKw,
+      minEffectivePowerKw: selectedEffectiveKw,
+    });
+    if (alternative) {
       const rule = 'R2' as const;
       if (
         shouldSuppress(

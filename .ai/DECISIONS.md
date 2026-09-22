@@ -1,5 +1,34 @@
 # Mimari / Tasarım Kararları
 
+## Presentation decisions — 22 September 2026
+- Lead with the user's socket choice and a computed example outcome; keep API/CSMS terminology in optional technical context. No auto-opening welcome dialog.
+- Do not present the internal throughput estimate as realized revenue. Field value must be validated with demand, acceptance and time-saving measurements.
+- R2 filters candidates before scoring: strictly lower rated power and no loss in effective power. Filtering only the winning candidate could hide a suitable alternative.
+- Prepared scenarios create fresh demo sessions; manual retries retain session-based suppression. This keeps examples reproducible without changing the production suppression rule.
+
+## Presentation review sonrası düzeltme — README ve marka dili (22 Eylül 2026)
+Presentation review'u yapan ajan README'yi İngilizceye çevirmiş ve arayüzdeki
+"OtoPriz Sahası" gibi etiketleri nötr isimlere ("Paylaşımlı kabin örneği")
+değiştirmiş, muhtemelen marka/izin riskini azaltmak için. Kullanıcı kararı:
+**bu geri alındı.** Gerekçe: hedef kitle (Eren Bey, OtoPriz ekibi) WhatsApp
+üzerinden Türkçe olarak bilgilendirilecek — link tıklandığında karşılaştığı
+sayfa da aynı dilde aynı sıcak anlatıyı sürdürmeli, tutarsızlık olmamalı.
+README Türkçeye ve "OtoPriz'e özel hazırlanan çalışan prototip" tonuna
+geri döndürüldü; `stationLayout.ts`'teki "OtoPriz Sahası" / "Büyük Operatör
+Sahası" isimleri ve `DriverPhone.tsx`'teki "OtoPriz" marka adı da eski
+haline getirildi.
+
+**Korunanlar (bunlar gerçek iyileştirmeydi, geri alınmadı):**
+- R2 filtresi (aşağıda), yanlış-pozitif önlemi
+- `NudgeModal`'a `key` prop'u (senaryo değişince state sıfırlanması, gerçek bug fix)
+- `WelcomeGuide`'ın native `<dialog>` + odak yönetimi
+- UI'dan sabit ciro rakamlarının (`+33 kWh · ~₺459`) kaldırılması, yerine
+  görece/tahmini ifadeler
+- README'deki "Prototipin sınırları" listesi (Türkçeye çevrilerek taşındı)
+- `PresentationHero` / `DecisionSummary` bileşenleri (linke tıklayan kişinin
+  bağlamı hızlıca anlaması için)
+- Footer'daki TurbineTwin linki (iki proje birlikte referans gösterilecek)
+
 Kaynak: uzun bir planlama oturumu, tam gerekçeler plan dosyasında
 (`C:\Users\Monster\.claude\plans\bir-b2b-saas-ve-hidden-balloon.md`).
 Burada yalnızca kod üzerinde iz bırakan kararlar özetleniyor.

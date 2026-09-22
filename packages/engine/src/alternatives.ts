@@ -15,6 +15,11 @@ export interface AlternativeCandidate {
   walkingDistanceM: number;
 }
 
+export interface AlternativeRequirements {
+  ratedPowerBelowKw?: number;
+  minEffectivePowerKw?: number;
+}
+
 function chargingSiblingIds(station: Station, evse: Evse): string[] {
   if (!evse.powerSharingGroupId) return [];
   return station.evses
@@ -29,7 +34,8 @@ function chargingSiblingIds(station: Station, evse: Evse): string[] {
 export function findBestAlternative(
   station: Station,
   vehicle: VehicleProfile,
-  excludeEvseId: string
+  excludeEvseId: string,
+  requirements: AlternativeRequirements = {}
 ): AlternativeCandidate | null {
   const groupsById = new Map<string, PowerSharingGroup>(
     station.powerSharingGroups.map((g) => [g.id, g])
@@ -54,7 +60,16 @@ export function findBestAlternative(
       const siblings = chargingSiblingIds(station, e);
       const effectivePowerKw = computeEffectivePower(e, group, vehicle, siblings);
       return { evse: e, effectivePowerKw, walkingDistanceM: e.walkingDistanceM };
-    });
+    })
+    // Kural kosullarini skordan once uygula: uygun olmayan yakin bir aday,
+    // daha uzaktaki ama gecerli bir alternatifi gizlememeli.
+    .filter(
+      (candidate) =>
+        (requirements.ratedPowerBelowKw === undefined ||
+          candidate.evse.ratedPowerKw < requirements.ratedPowerBelowKw) &&
+        (requirements.minEffectivePowerKw === undefined ||
+          candidate.effectivePowerKw >= requirements.minEffectivePowerKw)
+    );
 
   if (candidates.length === 0) return null;
 

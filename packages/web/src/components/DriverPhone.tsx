@@ -34,7 +34,7 @@ export function DriverPhone({
         Sürücü Telefonu
       </h2>
 
-      <div className="mx-auto w-[280px]">
+      <div className="mx-auto w-full max-w-[280px]">
         {/* Telefon cercevesi */}
         <div className="relative rounded-[2.5rem] border-4 border-surface-300/60 bg-surface-0 p-3 shadow-2xl">
           <div className="absolute left-1/2 top-1 h-4 w-20 -translate-x-1/2 rounded-full bg-surface-300/40" />
@@ -49,6 +49,8 @@ export function DriverPhone({
               Aracınız
             </label>
             <select
+              aria-label="Araç profili"
+              disabled={loading}
               value={selectedVehicleId}
               onChange={(e) => onVehicleChange(e.target.value)}
               className="mb-4 w-full rounded-lg border border-surface-300/50 bg-surface-100 px-2.5 py-2 text-xs text-slate-200 outline-none focus:border-brand-500"
@@ -65,6 +67,8 @@ export function DriverPhone({
             </label>
             <input
               type="range"
+              aria-label="Mevcut şarj seviyesi"
+              disabled={loading}
               min={0}
               max={95}
               value={soc}
@@ -73,7 +77,7 @@ export function DriverPhone({
             />
 
             <label className="mb-1.5 block text-[10px] uppercase tracking-wide text-slate-500">
-              QR okut — soket seçin
+              QR okutmayı dene — boş soket seçin
             </label>
             <div className="mb-4 grid grid-cols-4 gap-1.5">
               {evseOptions.map((evseId) => (
@@ -102,7 +106,7 @@ export function DriverPhone({
             )}
 
             {decision && decision.verdict !== 'PROCEED' && (
-              <NudgeModal decision={decision} onAccept={onAcceptNudge} onDecline={onDeclineNudge} />
+              <NudgeModal key={decision.selected.evseId + decision.triggeredRule} decision={decision} onAccept={onAcceptNudge} onDecline={onDeclineNudge} busy={loading} />
             )}
           </div>
         </div>

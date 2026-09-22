@@ -110,7 +110,8 @@ export async function acceptNudge(params: {
   evseId: string;
   triggeredRule: TriggeredRule;
 }): Promise<void> {
-  await signedFetch('POST', '/api/v1/sessions/accept-nudge', params, params.stationId);
+  const res = await signedFetch('POST', '/api/v1/sessions/accept-nudge', params, params.stationId);
+  if (!res.ok) throw new Error(`accept failed: ${res.status}`);
 }
 
 export async function declineNudge(params: {
@@ -120,7 +121,8 @@ export async function declineNudge(params: {
   triggeredRule: TriggeredRule;
   declineReason?: DeclineReason;
 }): Promise<void> {
-  await signedFetch('POST', '/api/v1/sessions/decline-nudge', params, params.stationId);
+  const res = await signedFetch('POST', '/api/v1/sessions/decline-nudge', params, params.stationId);
+  if (!res.ok) throw new Error(`decline failed: ${res.status}`);
 }
 
 export async function simulateStartSession(params: {
@@ -128,10 +130,12 @@ export async function simulateStartSession(params: {
   evseId: string;
   liveDrawKw: number;
 }): Promise<void> {
-  await signedFetch('POST', '/api/v1/simulate/start-session', params, params.stationId);
+  const res = await signedFetch('POST', '/api/v1/simulate/start-session', params, params.stationId);
+  if (!res.ok) throw new Error(`simulation failed: ${res.status}`);
 }
 
 export async function simulateReset(): Promise<void> {
   // Reset tum sahalari etkiler (mock CSMS), herhangi bir gecerli key yeterli.
-  await signedFetch('POST', '/api/v1/simulate/reset');
+  const res = await signedFetch('POST', '/api/v1/simulate/reset');
+  if (!res.ok) throw new Error(`reset failed: ${res.status}`);
 }

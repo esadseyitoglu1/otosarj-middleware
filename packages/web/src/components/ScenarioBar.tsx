@@ -4,36 +4,25 @@ interface ScenarioBarProps {
   onRun: (scenarioId: string) => void;
   onReset: () => void;
   running: boolean;
+  activeId: string | null;
 }
 
-export function ScenarioBar({ onRun, onReset, running }: ScenarioBarProps) {
+export function ScenarioBar({ onRun, onReset, running, activeId }: ScenarioBarProps) {
   return (
-    <div className="rounded-2xl border border-surface-300/50 bg-surface-50 p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-400">
-          Hazır Senaryolar
-        </h2>
-        <button
-          onClick={onReset}
-          className="text-[11px] text-slate-500 underline underline-offset-2 hover:text-slate-300"
-        >
-          Sahayı sıfırla
-        </button>
+    <div>
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div><h2 className="text-lg font-semibold text-slate-100">Üç seçim, üç farklı sonuç</h2>
+          <p className="mt-1 text-sm text-slate-400">Bir karta dokunun. Saha ve araç sizin için hazırlansın.</p></div>
+        <button onClick={onReset} disabled={running} className="shrink-0 text-xs text-slate-400 underline underline-offset-4 hover:text-white disabled:opacity-40">Sıfırla</button>
       </div>
-      <div className="flex flex-wrap gap-2">
-        {scenarios.map((s) => (
-          <button
-            key={s.id}
-            onClick={() => onRun(s.id)}
-            disabled={running}
-            title={s.description}
-            className="rounded-lg border border-surface-300/50 bg-surface-100 px-3 py-2 text-left text-xs text-slate-300 transition hover:border-brand-500 hover:text-brand-300 disabled:opacity-40"
-          >
-            <div className="font-medium">{s.label}</div>
-            <div className="mt-0.5 text-[10px] text-slate-500">{s.description}</div>
-            {s.revenueHint && (
-              <div className="mt-1 text-[10px] text-brand-400/80">↑ {s.revenueHint}</div>
-            )}
+      <div className="grid gap-3 md:grid-cols-3">
+        {scenarios.map((s, index) => (
+          <button key={s.id} onClick={() => onRun(s.id)} disabled={running} aria-pressed={activeId === s.id}
+            className={'rounded-2xl border p-5 text-left transition disabled:opacity-50 ' + (activeId === s.id ? 'border-brand-400/60 bg-brand-400/10' : 'border-surface-300/60 bg-surface-50 hover:border-brand-400/60')}>
+            <div className="mb-3 flex items-center justify-between text-xs"><span className="font-mono text-brand-300">0{index + 1}</span><span className="text-slate-500">{index === 0 ? 'Buradan başlayın' : 'Senaryoyu çalıştır'} ↗</span></div>
+            <h3 className="text-sm font-semibold text-slate-100">{s.label}</h3>
+            <p className="mt-2 text-xs leading-relaxed text-slate-400">{s.description}</p>
+            {s.revenueHint && <p className="mt-4 border-t border-surface-300/40 pt-3 text-xs text-brand-300">{s.revenueHint}</p>}
           </button>
         ))}
       </div>
