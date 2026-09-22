@@ -1,5 +1,15 @@
 # Mevcut Durum
 
+## Güvenlik incelemesi tamamlandı — 22 Eylül 2026, HENÜZ DEPLOY EDİLMEDİ
+Claude (sonnet 5) `packages/server` üzerinde savunma amaçlı güvenlik
+incelemesi yaptı (staj referansı için). 2 gerçek yetki-atlatma açığı
+bulup düzeltti + regresyon testi ekledi, HTTP güvenlik header'ları
+(Helmet) ve CORS allowlist eklendi. Detay: `.ai/DECISIONS.md` "Güvenlik
+incelemesi — 22 Eylül 2026". Test: server 20/20 (5 yeni), engine 30/30,
+tüm workspace build temiz. **Commit edilmedi, kullanıcı gözden geçirip
+kendi commit edecek. Sonra sunucuya deploy + `CORS_ALLOWED_ORIGINS` env
+değişkeni sunucuda set edilmeli** (bkz. `.env.production.example`).
+
 ## Operatör etkisi tahmini geri eklendi (koşullu) — 22 Eylül 2026, DEPLOY EDİLDİ
 `EngineLog`'a NUDGE + gerçek kWh farkı varken görünen bir "tahmini ek satış"
 kutusu eklendi (`+33.0 kWh · ~₺459` gibi, dürüstlük notuyla). Detay:

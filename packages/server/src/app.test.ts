@@ -186,6 +186,90 @@ describe('senaryo B - buyuk operator sahasinda R2 uctan uca', () => {
   });
 });
 
+describe('yetki izolasyonu - sessions ve simulate ucnoktalari (guvenlik duzeltmesi)', () => {
+  it('decline-nudge: baska operatorun sahasina OtoPriz key\'iyle kayit yazilamaz', async () => {
+    const app = createApp();
+    const declineBody = {
+      sessionId: 'session-cross-tenant-01',
+      stationId: 'buyuk-operator-ornek',
+      evseId: 'ultra-1',
+      triggeredRule: 'R1',
+    };
+    const { headers } = signRequest('POST', '/api/v1/sessions/decline-nudge', declineBody);
+
+    const res = await request(app)
+      .post('/api/v1/sessions/decline-nudge')
+      .set(headers)
+      .send(declineBody);
+
+    expect(res.status).toBe(400);
+  });
+
+  it('accept-nudge: baska operatorun sahasina OtoPriz key\'iyle kayit yazilamaz', async () => {
+    const app = createApp();
+    const acceptBody = {
+      sessionId: 'session-cross-tenant-02',
+      stationId: 'buyuk-operator-ornek',
+      evseId: 'ultra-1',
+      triggeredRule: 'R1',
+    };
+    const { headers } = signRequest('POST', '/api/v1/sessions/accept-nudge', acceptBody);
+
+    const res = await request(app)
+      .post('/api/v1/sessions/accept-nudge')
+      .set(headers)
+      .send(acceptBody);
+
+    expect(res.status).toBe(400);
+  });
+
+  it('accept-nudge: kendi sahasina gecerli kayit yazilabilir', async () => {
+    const app = createApp();
+    const acceptBody = {
+      sessionId: 'session-own-tenant-01',
+      stationId: 'otopriz-taspinar-benzeri',
+      evseId: '1B',
+      triggeredRule: 'R1',
+    };
+    const { headers } = signRequest('POST', '/api/v1/sessions/accept-nudge', acceptBody);
+
+    const res = await request(app)
+      .post('/api/v1/sessions/accept-nudge')
+      .set(headers)
+      .send(acceptBody);
+
+    expect(res.status).toBe(200);
+  });
+
+  it('simulate/start-session: baska operatorun sahasindaki EVSE OtoPriz key\'iyle degistirilemez', async () => {
+    const app = createApp();
+    const body = {
+      stationId: 'buyuk-operator-ornek',
+      evseId: 'ultra-1',
+      liveDrawKw: 50,
+    };
+    const { headers } = signRequest('POST', '/api/v1/simulate/start-session', body);
+
+    const res = await request(app).post('/api/v1/simulate/start-session').set(headers).send(body);
+
+    expect(res.status).toBe(404);
+  });
+
+  it('simulate/start-session: kendi sahasindaki EVSE degistirilebilir', async () => {
+    const app = createApp();
+    const body = {
+      stationId: 'otopriz-taspinar-benzeri',
+      evseId: '1B',
+      liveDrawKw: 50,
+    };
+    const { headers } = signRequest('POST', '/api/v1/simulate/start-session', body);
+
+    const res = await request(app).post('/api/v1/simulate/start-session').set(headers).send(body);
+
+    expect(res.status).toBe(200);
+  });
+});
+
 describe('rate limiting', () => {
   it('limit asilinca 429 doner', async () => {
     const app = createApp();

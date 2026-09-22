@@ -1,5 +1,24 @@
 # Bilinen Sınırlar
 
+## Güvenlik incelemesi sonrası açık kalanlar (22 Eylül 2026)
+- **npm audit: 1 critical + 1 high** (`vitest` <3.2.6 — GHSA-5xrq-8626-4rwp,
+  arbitrary file read/execute via Vitest UI server; `vite` <=6.4.2 — path
+  traversal). İkisi de devDependency, prod server bağımlılıkları
+  (express/cors/helmet) etkilenmiyor, proje `vitest --ui` de kullanmıyor.
+  Düzeltme vitest 2.x→3.x major bump gerektiriyor — 3 workspace'i
+  etkileyebileceği için otomatik düzeltilmedi. Yapılacak: ayrı bir
+  branch'te `vitest`/`vite` major upgrade denenip tüm testler+build
+  doğrulanmalı.
+- **`CORS_ALLOWED_ORIGINS` env değişkeni sunucuda henüz set edilmedi.**
+  Kod artık bu değişken yoksa sadece localhost'a izin veriyor (önceden
+  `*` idi). Deploy edilmeden önce sunucuda
+  `/opt/otosarj/packages/server/.env`'e eklenmeli, yoksa production'da
+  web arayüzünden yapılan fetch çağrıları CORS'a takılabilir (aynı
+  domain'den serve edildiği için pratikte etkisi az ama garanti değil —
+  deploy sonrası test edilmeli).
+- **`simulate/reset` hâlâ operatör ayrımı yapmıyor** (kasıtlı tasarım,
+  demo amaçlı tüm state'i sıfırlıyor, `client.ts`'te belgeli).
+
 ## Presentation review (22 Eylül 2026)
 - **Görsel QA tamamlandı (22 Eylül, Claude):** Playwright ile 7 ekran
   görüntüsü alındı — hero, welcome guide (native dialog), senaryo A/B/C,

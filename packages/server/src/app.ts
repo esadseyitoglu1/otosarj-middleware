@@ -13,6 +13,7 @@
  */
 import express, { type Express, type NextFunction, type Request, type Response } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import { requireSignedRequest } from './middleware/auth.js';
 import { createRateLimiter } from './middleware/rateLimit.js';
 import { validateScanRequest, validateStationIdParam } from './middleware/validate.js';
@@ -24,11 +25,38 @@ import { createStationLiveHandler } from './routes/stations.js';
 import { createAcceptNudgeHandler, createDeclineNudgeHandler } from './routes/sessions.js';
 import { createSimulateStartHandler, createSimulateResetHandler } from './routes/simulate.js';
 
+// GUVENLIK KARARI (bkz. guvenlik incelemesi): CORS onceden `cors()` ile
+// sinirsizdi (Access-Control-Allow-Origin: *). Bu API HMAC imzasi
+// gerektirdigi icin CSRF/credential hirsizligi riski dusuktu (bkz. auth.ts),
+// ama "hangi origin'ler bu API'yi tarayicidan cagirabilir" sorusu acikca
+// tanimli degildi. Artik izinli origin listesi CORS_ALLOWED_ORIGINS env
+// degiskeninden (virgulle ayrilmis) okunuyor; tanimli degilse gelistirme
+// icin localhost'a dusuluyor -- production'da bu deger mutlaka set edilmeli.
+function resolveAllowedOrigins(): string[] {
+  const raw = process.env.CORS_ALLOWED_ORIGINS;
+  if (raw && raw.trim().length > 0) {
+    return raw.split(',').map((o) => o.trim()).filter(Boolean);
+  }
+  return ['http://localhost:5173', 'http://localhost:4173'];
+}
+
 export function createApp(): Express {
   const app = express();
   app.set('trust proxy', 1);
 
-  app.use(cors());
+  // GUVENLIK: HTTP guvenlik header'lari (CSP, X-Frame-Options,
+  // X-Content-Type-Options, HSTS vb.). Bu API JSON dondugu ve tarayicida
+  // dogrudan render edilen HTML sunmadigi icin varsayilan Helmet CSP
+  // yeterli -- ayrica statik sayfa yok ki inline script/style istisnasi
+  // gereksin.
+  app.use(helmet());
+
+  const allowedOrigins = resolveAllowedOrigins();
+  app.use(
+    cors({
+      origin: allowedOrigins,
+    })
+  );
 
   // JSON body parse ederken RAW govdeyi de sakla -- HMAC imza kontrolu
   // (auth.ts) imzali metnin tam olarak istemcinin gonderdigi byte'lar
@@ -71,13 +99,13 @@ export function createApp(): Express {
   app.post(
     '/api/v1/sessions/accept-nudge',
     requireSignedRequest,
-    createAcceptNudgeHandler(telemetry)
+    createAcceptNudgeHandler(telemetry, csms)
   );
 
   app.post(
     '/api/v1/sessions/decline-nudge',
     requireSignedRequest,
-    createDeclineNudgeHandler(suppression, telemetry)
+    createDeclineNudgeHandler(suppression, telemetry, csms)
   );
 
   // --- Demo/simulasyon ucnoktalari (gercek CSMS'te bulunmaz) ---

@@ -1,5 +1,47 @@
 # Mimari / Tasarım Kararları
 
+## Güvenlik incelemesi — 22 Eylül 2026
+Kod incelemesi + `npm audit` + git geçmişi taraması. Bulgular ciddiyete
+göre `.ai/KNOWN_ISSUES.md`'de. Öne çıkanlar:
+- **Cross-tenant yetki atlatma (düzeltildi):** `sessions.ts`
+  (accept/decline-nudge) ve `simulate.ts` (start-session) `stationId`'nin
+  çağıran `req.operatorId`'ye ait olup olmadığını kontrol ETMİYORDU —
+  `/scan` ve `/live`'daki gibi bir izolasyon eksikti. Geçerli herhangi bir
+  demo API key ile başka operatörün sahasına telemetri/suppression kaydı
+  yazılabiliyor, simüle EVSE durumu değiştirilebiliyordu. Düzeltme: her
+  ikisine de `station.operatorId !== req.operatorId` kontrolü eklendi
+  (CsmsAdapter üzerinden), jenerik 400/404 ile enumeration korunuyor.
+  Regresyon testleri eklendi (`app.test.ts`, 5 yeni test).
+- **HTTP güvenlik header'ları eklendi:** `helmet()` (CSP, X-Frame-Options,
+  X-Content-Type-Options, HSTS). Önceden hiç yoktu.
+- **CORS daraltıldı:** `cors()` (tüm origin'lere açık) yerine
+  `CORS_ALLOWED_ORIGINS` env değişkeninden okunan allowlist. Boşsa
+  sadece localhost dev origin'leri. **Production'da bu env değişkeni
+  sunucuda set edilmeli** (`.env.production.example`'a örnek eklendi:
+  `https://otopriz.esadseyitoglu.xyz`). Not: web ve API aynı domainden
+  serve edildiği için (bkz. deploy mimarisi) tarayıcıdan çapraz-origin
+  istek riski zaten düşüktü, ama önceki hal açıkça yanlıştı.
+- **HMAC/timing-safe/replay:** zaten doğruydu — `timingSafeEqual`
+  kullanılıyor, 1 dakikalık timestamp penceresi var, `trust proxy: 1`
+  doğru (tek Caddy hop'u, `af3b51d` ile düzeltilmişti, hâlâ doğru).
+  Değişiklik yapılmadı.
+- **SQL injection:** N/A, veritabanı yok (in-memory + JSON fixture).
+- **XSS:** `driverMessage` sunucu şablonundan üretiliyor, React JSX
+  default escape ediyor, `dangerouslySetInnerHTML` hiçbir yerde yok.
+- **Secret geçmişi:** `packages/web/.env.production` bir ara commit
+  edilmişti (`9bb5d9f` ile kaldırıldı) ama içeriği sadece
+  `VITE_API_BASE_URL` (public hostname) idi — gerçek secret hiç git'e
+  girmedi, blob içeriği doğrulandı. Zaten `.ai/KNOWN_ISSUES.md`'de
+  belgeli bir "çözülmüş incident".
+- **npm audit:** 1 critical + 1 high (vitest/vite/esbuild) — hepsi
+  devDependency, production server bağımlılıkları (`express`, `cors`,
+  `helmet`) temiz. Düzeltme major version bump gerektiriyor (vitest 2→3),
+  riskli görülüp düzeltilmedi, sadece raporlandı (bkz. KNOWN_ISSUES).
+- **Düzeltilmeyen/düşük öncelikli:** `simulate/reset` hâlâ operatör
+  ayrımı yapmıyor (kasıtlı, tüm demo state'i sıfırlıyor — dokümante
+  edilmiş davranış); istemci tarafında HMAC secret'in tarayıcıya
+  gömülmesi zaten bilinen ve dokümante edilmiş bir prototip kısayolu.
+
 ## Presentation decisions — 22 September 2026
 - Lead with the user's socket choice and a computed example outcome; keep API/CSMS terminology in optional technical context. No auto-opening welcome dialog.
 - Do not present the internal throughput estimate as realized revenue. Field value must be validated with demand, acceptance and time-saving measurements.
