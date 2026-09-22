@@ -65,6 +65,20 @@ gelen kutu eklendi — ama iki koşulla:
 Playwright ile doğrulandı: Senaryo A (R1) → "+33.0 kWh · ~₺459" görünüyor;
 Senaryo B (R2) → kutu görünmüyor (gerçek davranış, bug değil).
 
+**Güncelleme (aynı gün): R2'nin de bir gelir hikâyesi var, ayrı bir
+metrikle eklendi.** Yukarıdaki "R2'de kutu görünmüyor" davranışı teknik
+olarak doğruydu ama iş açısından eksikti: R2'de kazanç bu seansın
+throughput'undan gelmiyor, **boşalan yüksek güçlü soketin bir sonraki
+(gerçekten o gücü kullanabilen) araca kalmasından** geliyor — plan
+dosyasındaki kârlılık modelinin "Kapasite kurtarma" kalemi. `OperatorImpact`'e
+`freedCapacityKw` alanı eklendi:
+`vacatedEvseRatedPowerKw - selectedEffectivePowerKw` (yani 300 kW soketi
+50 kW'lık araç işgal ediyorsa → 250 kW). R1'de bu alan 0 (orada soket
+değişmiyor, kazanç zaten `kwhThroughputGainKwh`'de); R2'de
+`kwhThroughputGainKwh` 0 (efektif güç aynı). İki kural, iki ayrı kazanç
+kanalı, iki ayrı UI kutusu — `EngineLog`'da koşullu gösteriliyor.
+Testlerle kilitlendi (`decide.test.ts`: R2 → 250 kW, R1 → 0).
+
 ## Presentation review sonrası düzeltme — README ve marka dili (22 Eylül 2026)
 Presentation review'u yapan ajan README'yi İngilizceye çevirmiş ve arayüzdeki
 "OtoPriz Sahası" gibi etiketleri nötr isimlere ("Paylaşımlı kabin örneği")

@@ -74,7 +74,7 @@ function proceedDecision(
     selected: { evseId: selectedEvseId, effectivePowerKw, estMinutesTo80 },
     recommended: null,
     driverMessage: buildProceedMessage(),
-    operatorImpact: { kwhThroughputGainKwh: 0, revenueOpportunityTl: 0 },
+    operatorImpact: { kwhThroughputGainKwh: 0, revenueOpportunityTl: 0, freedCapacityKw: 0 },
     reasoning,
   };
 }
@@ -115,7 +115,7 @@ export function decide(params: DecideParams): Decision {
       selected: { evseId: evse.id, effectivePowerKw: 0, estMinutesTo80: 0 },
       recommended: null,
       driverMessage: buildBlockMessage(evse.connectorType),
-      operatorImpact: { kwhThroughputGainKwh: 0, revenueOpportunityTl: 0 },
+      operatorImpact: { kwhThroughputGainKwh: 0, revenueOpportunityTl: 0, freedCapacityKw: 0 },
       reasoning,
     };
   }
@@ -273,7 +273,8 @@ export function decide(params: DecideParams): Decision {
           selectedEffectiveKw,
           alternative.effectivePowerKw,
           altEstimate.minutesToTarget,
-          evse.tariffTlPerKwh
+          evse.tariffTlPerKwh,
+          evse.ratedPowerKw
         ),
         reasoning,
       };

@@ -82,6 +82,24 @@ export function EngineLog({ decision, stats }: EngineLogProps) {
                 </p>
               </div>
             )}
+
+            {decision.verdict === 'NUDGE' && decision.operatorImpact.freedCapacityKw > 0 && (
+              <div className="mt-4 rounded-xl border border-brand-500/20 bg-brand-500/5 p-3">
+                <p className="text-[11px] font-medium text-brand-300">
+                  Bu öneri kabul edilirse (tahmini, fırsat maliyeti)
+                </p>
+                <p className="mt-1 text-xs text-slate-300">
+                  {decision.selected.evseId} soketinde ~
+                  {decision.operatorImpact.freedCapacityKw.toFixed(0)} kW kapasite
+                  boşalır — o gücü gerçekten kullanabilecek bir sonraki araca satılabilir.
+                </p>
+                <p className="mt-1.5 text-[10px] leading-relaxed text-slate-500">
+                  Soket nominal gücü − bu seansın gücü ile hesaplanır. Sahada bir sonraki
+                  aracın gelip gelmeyeceği (doluluk/talep) modellenmez, gerçekleşmiş bir
+                  ciro değildir.
+                </p>
+              </div>
+            )}
           </>
         )}
 

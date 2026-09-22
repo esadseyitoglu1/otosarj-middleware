@@ -15,7 +15,12 @@ export function computeOperatorImpact(
   selectedEffectivePowerKw: number,
   recommendedEffectivePowerKw: number,
   estimatedSessionMinutes: number,
-  tariffTlPerKwh: number
+  tariffTlPerKwh: number,
+  /**
+   * R2 icin: bosalan soketin NOMINAL gucu (araca degil, soketin kendisine
+   * ait ratedPowerKw). Verilmezse freedCapacityKw 0 doner (R1 cagrisi gibi).
+   */
+  vacatedEvseRatedPowerKw?: number
 ): OperatorImpact {
   const powerGainKw = Math.max(
     0,
@@ -26,5 +31,13 @@ export function computeOperatorImpact(
   const revenueOpportunityTl =
     Math.round(kwhThroughputGainKwh * tariffTlPerKwh * 100) / 100;
 
-  return { kwhThroughputGainKwh, revenueOpportunityTl };
+  // Kapasite kurtarma: bu seansin kendi throughput'u degil, bosalan
+  // yuksek guclu soketin -- suru asiri-tahsis edilmis araci degil,
+  // gercekten o gucu kullanabilecek bir sonraki araci -- agirlayabilme
+  // potansiyeli. Sadece R2'de anlamli (R1'de soket zaten ayni kalir).
+  const freedCapacityKw = vacatedEvseRatedPowerKw
+    ? Math.max(0, Math.round((vacatedEvseRatedPowerKw - selectedEffectivePowerKw) * 100) / 100)
+    : 0;
+
+  return { kwhThroughputGainKwh, revenueOpportunityTl, freedCapacityKw };
 }

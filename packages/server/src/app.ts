@@ -32,12 +32,14 @@ import { createSimulateStartHandler, createSimulateResetHandler } from './routes
 // tanimli degildi. Artik izinli origin listesi CORS_ALLOWED_ORIGINS env
 // degiskeninden (virgulle ayrilmis) okunuyor; tanimli degilse gelistirme
 // icin localhost'a dusuluyor -- production'da bu deger mutlaka set edilmeli.
-function resolveAllowedOrigins(): string[] {
+function resolveAllowedOrigins(): (string | RegExp)[] {
   const raw = process.env.CORS_ALLOWED_ORIGINS;
   if (raw && raw.trim().length > 0) {
     return raw.split(',').map((o) => o.trim()).filter(Boolean);
   }
-  return ['http://localhost:5173', 'http://localhost:4173'];
+  // Vite varsayilan portu mesgulse kendiliginden bir sonrakine kayar
+  // (5173 -> 5174 -> ...), bu yuzden dev fallback'i tek porta baglamiyoruz.
+  return [/^http:\/\/localhost:\d+$/, /^http:\/\/127\.0\.0\.1:\d+$/];
 }
 
 export function createApp(): Express {

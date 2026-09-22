@@ -89,6 +89,13 @@ export interface RecommendedChargeEstimate extends ChargeEstimate {
 export interface OperatorImpact {
   kwhThroughputGainKwh: number;
   revenueOpportunityTl: number;
+  /**
+   * R2'ye ozgu: bu seansin kendi throughput'undan degil, boşalan yuksek
+   * guclu soketin bir SONRAKI (daha yuksek kapasiteli) araca saglayacagi
+   * kapasiteden gelen tahmini firsat. R1'de bu alan hep 0 -- orada kazanc
+   * zaten kwhThroughputGainKwh ile olculuyor. Bkz. operatorImpact.ts.
+   */
+  freedCapacityKw: number;
 }
 
 export type DeclineReason = 'parking' | 'price' | 'short-stop' | 'other';

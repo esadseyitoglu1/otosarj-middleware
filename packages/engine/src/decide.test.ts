@@ -33,6 +33,9 @@ describe('decide - R1 power-sharing (OtoPriz senaryosu A)', () => {
     expect(result.recommended!.effectivePowerKw).toBe(180);
     expect(result.driverMessage).toContain('Tercih sizin');
     expect(result.operatorImpact.kwhThroughputGainKwh).toBeGreaterThan(0);
+    // R1'de soket degismiyor, sadece guc paylasimi cozuluyor -> kapasite
+    // "bosalmiyor", kazanc zaten throughput farkinda olculuyor.
+    expect(result.operatorImpact.freedCapacityKw).toBe(0);
   });
 
   it('paylasimli grupta komsu soket BOSSA nudge verilmemeli', () => {
@@ -73,6 +76,11 @@ describe('decide - R2 kapasite asiri-tahsisi', () => {
     expect(result.triggeredRule).toBe('R2');
     expect(result.selected.effectivePowerKw).toBe(50); // arac limitli
     expect(result.recommended).not.toBeNull();
+    // R2'de kazanc bu seansin throughput'undan DEGIL, bosalan yuksek guclu
+    // soketin bir sonraki araca kalmasindan gelir: 300 kW soket, 50 kW'lik
+    // bir arac tarafindan isgal ediliyordu -> 250 kW kapasite bosalir.
+    expect(result.operatorImpact.kwhThroughputGainKwh).toBe(0);
+    expect(result.operatorImpact.freedCapacityKw).toBe(250);
   });
 
   it('120 kW soket icin de daha dusuk kapasiteli uygun alternatif varsa R2 tetiklenir', () => {
