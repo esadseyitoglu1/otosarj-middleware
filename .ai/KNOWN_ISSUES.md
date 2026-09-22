@@ -20,7 +20,7 @@
   demo amaçlı tüm state'i sıfırlıyor, `client.ts`'te belgeli).
 
 ## Presentation review (22 Eylül 2026)
-- **Görsel QA tamamlandı (22 Eylül, Claude):** Playwright ile 7 ekran
+- **Görsel QA tamamlandı (22 Eylül):** Playwright ile 7 ekran
   görüntüsü alındı — hero, welcome guide (native dialog), senaryo A/B/C,
   teknik detaylar, mobil 390px. Hiç console/page error yok. Önceki
   "visual QA pending" notu geçersiz.

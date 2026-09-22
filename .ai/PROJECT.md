@@ -6,10 +6,11 @@ mevcut QR-okutma akışına giren bir karar motoru (middleware API). Sürücü
 verimsiz bir soket seçtiğinde ("Nudge") mobil ekranda uyarı gösterir.
 
 ## Hedef ve bağlam
-Kullanıcı, Eksim Holding'in şarj ağı markası **OtoPriz**'e staj başvurusu için
-çalışan bir prototip + B2B fizibilite dosyası hazırlıyor. Detaylı araştırma
-ve karar geçmişi: `.ai/DECISIONS.md`, iş/mevzuat bağlamı: `docs/technical/`
-(Aşama 3'te yazılacak).
+Türkiye'deki bir DC şarj operatörünün saha koşulları örnek alınarak
+hazırlanan, çalışan bir prototip. Amaç: problemin gerçekliğini ve çözümün
+uygulanabilirliğini kodla göstermek. Detaylı karar geçmişi:
+`.ai/DECISIONS.md`, iş/mevzuat bağlamı: `docs/technical/` (Aşama 3'te
+yazılacak).
 
 ## Çözülen iki problem
 1. **Power-sharing bilinçsizliği (ANA HİKÂYE, R1):** 180 kW paylaşımlı

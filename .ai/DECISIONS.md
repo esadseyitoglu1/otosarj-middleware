@@ -42,17 +42,25 @@ göre `.ai/KNOWN_ISSUES.md`'de. Öne çıkanlar:
   edilmiş davranış); istemci tarafında HMAC secret'in tarayıcıya
   gömülmesi zaten bilinen ve dokümante edilmiş bir prototip kısayolu.
 
-## Presentation decisions — 22 September 2026
-- Lead with the user's socket choice and a computed example outcome; keep API/CSMS terminology in optional technical context. No auto-opening welcome dialog.
-- Do not present the internal throughput estimate as realized revenue. Field value must be validated with demand, acceptance and time-saving measurements.
-- R2 filters candidates before scoring: strictly lower rated power and no loss in effective power. Filtering only the winning candidate could hide a suitable alternative.
-- Prepared scenarios create fresh demo sessions; manual retries retain session-based suppression. This keeps examples reproducible without changing the production suppression rule.
+## Sunum kararları — 22 Eylül 2026
+- Anlatım sürücünün soket seçimi ve hesaplanmış bir örnek sonuçla başlar;
+  API/CSMS terminolojisi isteğe bağlı teknik bağlamda kalır. Açılışta
+  kendiliğinden açılan karşılama penceresi yok.
+- Motorun ürettiği throughput tahmini gerçekleşmiş ciro gibi sunulmaz.
+  Sahadaki değer talep, kabul oranı ve zaman kazancı ölçümleriyle
+  doğrulanmalı.
+- R2 adayları skorlamadan **önce** filtreler: nominal gücü kesinlikle daha
+  düşük ve efektif güçte kayıp yok. Yalnızca kazanan adayı filtrelemek,
+  uygun bir alternatifi gizleyebilirdi.
+- Hazır senaryolar temiz demo oturumu açar; elle tekrar denemeler oturum
+  bazlı suppression'ı korur. Böylece örnekler tekrarlanabilir kalırken
+  gerçek suppression kuralı değişmiyor.
 
-## Operatör etkisi tahmini — koşullu geri ekleme (22 Eylül 2026)
-Kullanıcı: sabit ciro rakamının tamamen kaldırılması "business sense"i
-zayıflatıyor, bir tahmin göstermek staj değerlendirmesi açısından iyi olur.
-`EngineLog`'a (`Kararın gerekçesi` paneli) `decision.operatorImpact`'ten
-gelen kutu eklendi — ama iki koşulla:
+## Operatör etkisi tahmini — koşullu gösterim (22 Eylül 2026)
+Ciro tahmininin arayüzden tamamen kaldırılması, önerinin operatör
+tarafındaki karşılığını görünmez bırakıyordu — oysa ürünün satış argümanı
+tam olarak orada. `EngineLog`'a (`Kararın gerekçesi` paneli)
+`decision.operatorImpact`'ten gelen kutu eklendi, iki koşulla:
 1. **Sadece `verdict === 'NUDGE'` VE `kwhThroughputGainKwh > 0` iken görünür.**
    R2 senaryosunda (B) seçilen ve önerilen soketin efektif gücü aynı
    olabiliyor (ikisi de aracın kapasitesiyle sınırlı) — bu durumda gerçek
@@ -79,33 +87,16 @@ değişmiyor, kazanç zaten `kwhThroughputGainKwh`'de); R2'de
 kanalı, iki ayrı UI kutusu — `EngineLog`'da koşullu gösteriliyor.
 Testlerle kilitlendi (`decide.test.ts`: R2 → 250 kW, R1 → 0).
 
-## Presentation review sonrası düzeltme — README ve marka dili (22 Eylül 2026)
-Presentation review'u yapan ajan README'yi İngilizceye çevirmiş ve arayüzdeki
-"OtoPriz Sahası" gibi etiketleri nötr isimlere ("Paylaşımlı kabin örneği")
-değiştirmiş, muhtemelen marka/izin riskini azaltmak için. Kullanıcı kararı:
-**bu geri alındı.** Gerekçe: hedef kitle (Eren Bey, OtoPriz ekibi) WhatsApp
-üzerinden Türkçe olarak bilgilendirilecek — link tıklandığında karşılaştığı
-sayfa da aynı dilde aynı sıcak anlatıyı sürdürmeli, tutarsızlık olmamalı.
-README Türkçeye ve "OtoPriz'e özel hazırlanan çalışan prototip" tonuna
-geri döndürüldü; `stationLayout.ts`'teki "OtoPriz Sahası" / "Büyük Operatör
-Sahası" isimleri ve `DriverPhone.tsx`'teki "OtoPriz" marka adı da eski
-haline getirildi.
+## Arayüz ve doküman dili Türkçe (22 Eylül 2026)
+Bir ara README İngilizceye çevrilmiş ve arayüzdeki "OtoPriz Sahası" gibi
+etiketler nötr isimlere ("Paylaşımlı kabin örneği") dönüştürülmüştü.
+Bu geri alındı: prototip Türkiye pazarındaki bir operatör senaryosu için
+hazırlanıyor, demo Türkçe anlatılıyor, dolayısıyla README ile arayüzün
+aynı dilde ve aynı tonda olması gerekiyor. Saha isimleri
+(`stationLayout.ts`) ve `DriverPhone.tsx`'teki marka adı da geri alındı.
 
-**Korunanlar (bunlar gerçek iyileştirmeydi, geri alınmadı):**
-- R2 filtresi (aşağıda), yanlış-pozitif önlemi
-- `NudgeModal`'a `key` prop'u (senaryo değişince state sıfırlanması, gerçek bug fix)
-- `WelcomeGuide`'ın native `<dialog>` + odak yönetimi
-- UI'dan senaryo kartlarındaki sabit/başta hep aynı ciro rakamının kaldırılması
-  (bkz. aşağıdaki "Operatör etkisi tahmini" kararı — tamamen kaldırılmadı,
-  koşullu/dinamik hale getirildi)
-- README'deki "Prototipin sınırları" listesi (Türkçeye çevrilerek taşındı)
-- `PresentationHero` / `DecisionSummary` bileşenleri (linke tıklayan kişinin
-  bağlamı hızlıca anlaması için)
-- Footer'daki TurbineTwin linki (iki proje birlikte referans gösterilecek)
-
-Kaynak: uzun bir planlama oturumu, tam gerekçeler plan dosyasında
-(`C:\Users\Monster\.claude\plans\bir-b2b-saas-ve-hidden-balloon.md`).
-Burada yalnızca kod üzerinde iz bırakan kararlar özetleniyor.
+Not: fixture'lardaki saha isimleri gerçek bir operatörün saha
+konfigürasyonundan esinlenmiş örneklerdir, gerçek veri değildir.
 
 ## 1. Donanım değil, yazılım middleware
 180 kW kabin fiziksel olarak 180 kW'tır — problem güç problemi değil
@@ -170,9 +161,9 @@ dosya + reverse proxy (mevcut Docker Caddy container'ına yeni bir
 Caddyfile bloğu eklendi, diğer servislere dokunulmadı). Detay:
 `.ai/STATE.md` "Deploy mimarisi".
 
-## 11. Subdomain adı: otopriz (kullanıcı kararı), otosarj değil
-İlk kurulum `otosarj.esadseyitoglu.xyz` olarak yapılmıştı; kullanıcı
-Cloudflare'de bilerek `otopriz` ekledi çünkü hedef kitleye (OtoPriz'e)
-daha net hitap ediyor. Caddyfile ve web `.env.production` buna göre
-güncellendi. Proje/repo adı hâlâ "otosarj" (GitHub, dizin adı) — sadece
-canlı demo linki `otopriz` kullanıyor.
+## 11. Subdomain adı `otopriz`, proje adı `otosarj`
+İlk kurulum `otosarj.esadseyitoglu.xyz` olarak yapılmıştı; demo linkinin
+örnek alınan operatör senaryosuna daha net hitap etmesi için subdomain
+`otopriz` olarak değiştirildi. Caddyfile ve web `.env.production` buna göre
+güncellendi. Proje/repo adı hâlâ "otosarj" — yalnızca canlı demo linki
+`otopriz` kullanıyor.
