@@ -27,7 +27,13 @@ gözden geçirdi:
   içindeki `verify-oto.mjs` scratchpad'e taşındı, `TurbineTwin/` kopyası
   gereksizdi çünkü asıl proje `C:\Users\Monster\Desktop\TurbineTwin`'de
   zaten güncel).
-- **Henüz yapılmadı:** local değişiklikler commit/push/deploy edilmedi.
+- **Deploy tamamlandı (22 Eylül 2026):** commit `d6e267f`, GitHub'a ve
+  sunucuya (`git push deploy`) push edildi. Sunucuda build+test+restart
+  yapıldı (engine 30/30, server 15/15). `/srv/otosarj/assets/` eski
+  bundle'lardan temizlendi. Production'da A/B/C senaryoları HMAC imzalı
+  gerçek isteklerle doğrulandı — R2 düzeltmesi (renault-zoe + 300kW ->
+  R2 -> fast-1, 50kW) canlıda çalışıyor. Canlı URL şimdi bu commit'i
+  yansıtıyor: https://otopriz.esadseyitoglu.xyz
 
 ## Çalışan
 - **packages/engine tamamlandı.** 30/30 test yeşil. R1-R5 kuralları,
