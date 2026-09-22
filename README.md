@@ -166,6 +166,46 @@ ortamında HMAC imzalama tarayıcıda çalışıyor — bu yüzden demo secret'�
 production secret'ı ya da bir güvenlik sınırı değil. Gerçek dağıtımda
 imzalama operatörün kendi backend'inde yapılmalı.)*
 
+### Güvenlik incelemesi (22 Eylül 2026)
+
+Kodun tamamı savunma amaçlı bir incelemeden geçirildi. Bulunan iki gerçek
+açık düzeltildi ve regresyon testleriyle kilitlendi:
+
+- **Operatörler arası yetki atlatma (yüksek önem).**
+  `POST /api/v1/sessions/accept-nudge`, `/decline-nudge` ve
+  `/simulate/start-session` uçları, isteğin imzası geçerli olduğu sürece
+  `stationId`'nin **çağıran operatöre ait olup olmadığını kontrol
+  etmiyordu**. Yani A operatörünün anahtarıyla B operatörünün sahasına
+  telemetri/suppression kaydı yazılabiliyor, simüle soket durumu
+  değiştirilebiliyordu. `/scan` ve `/live` uçlarında bu kontrol zaten vardı
+  — eksiklik sonradan eklenen uçlardaydı. Düzeltme: üçüne de
+  `station.operatorId === req.operatorId` kontrolü eklendi, hata mesajı
+  jenerik tutuldu (hangi sahanın var olduğunu sızdırmamak için).
+- **Girdi doğrulama boşluğu.** Aynı uçlarda `sessionId`/`stationId`/`evseId`
+  yalnızca "string mi" diye bakılıyordu; uzunluk ve biçim sınırı yoktu.
+  Regex + uzunluk sınırı eklendi.
+
+Ayrıca sertleştirme olarak: HTTP güvenlik başlıkları (Helmet — CSP,
+HSTS, `X-Frame-Options`, `X-Content-Type-Options`) ve sınırsız CORS
+(`Access-Control-Allow-Origin: *`) yerine allowlist eklendi.
+
+Zaten sağlam çıkan ve değiştirilmeyen noktalar:
+
+- **SQL injection yüzeyi yok** — projede veritabanı kullanılmıyor
+  (bellek-içi state + tip güvenli fixture'lar).
+- **HMAC doğrulaması** zamanlama saldırısına karşı `crypto.timingSafeEqual`
+  kullanıyor, replay'e karşı 60 saniyelik zaman damgası penceresi var,
+  tüm başarısızlıklar aynı jenerik 401'i dönüyor.
+- **XSS** — sürücü mesajları sunucu şablonundan üretiliyor, istemci girdisi
+  mesaja karışmıyor; arayüzde `dangerouslySetInnerHTML` hiç kullanılmıyor.
+- **Secret sızıntısı yok** — git geçmişinin tamamı tarandı, gerçek bir
+  secret hiçbir zaman commit edilmemiş.
+
+Açık bırakılanlar: geliştirme bağımlılıklarında (`vitest`/`vite`) major
+sürüm yükseltmesi gerektiren bilinen açıklar var; production sunucu
+bağımlılıkları (`express`, `helmet`, `cors`) temiz. Ayrıntılar
+`.ai/KNOWN_ISSUES.md` içinde.
+
 ### CSMS verisi — yasal durum
 
 **CSMS** (Charge Station Management System), operatörün şarj ağını yöneten
