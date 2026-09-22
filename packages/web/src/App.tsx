@@ -261,9 +261,56 @@ function App() {
         </section>
       </main>
 
+      <section className="mx-auto mt-12 max-w-7xl border-t border-surface-300/30 pt-8" aria-labelledby="tech-title">
+        <h2 id="tech-title" className="mb-4 text-sm font-semibold text-slate-200">
+          Bu prototipin altında ne var?
+        </h2>
+        <div className="grid gap-3 md:grid-cols-3">
+          <div className="rounded-xl border border-surface-300/50 bg-surface-50 p-4">
+            <span className="mb-2 inline-block rounded bg-brand-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-300">
+              Karar motoru
+            </span>
+            <p className="text-xs leading-relaxed text-slate-400">
+              Kurallar (güç paylaşımı, kapasite uyumu, konnektör, suppression)
+              framework'ten bağımsız saf bir TypeScript paketinde ve 30 testle
+              kaplı. Arayüz değil, motor karar veriyor — her karar
+              gerekçesiyle birlikte dönüyor.
+            </p>
+          </div>
+          <div className="rounded-xl border border-surface-300/50 bg-surface-50 p-4">
+            <span className="mb-2 inline-block rounded bg-brand-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-300">
+              Güvenlik
+            </span>
+            <p className="text-xs leading-relaxed text-slate-400">
+              SQL injection yüzeyi yok — veritabanı kullanılmıyor. İstekler
+              HMAC ile imzalanıyor, doğrulama zamanlama saldırısına karşı
+              korumalı, replay'e karşı zaman penceresi var. Operatörler arası
+              izolasyon testlerle kilitli. Güvenlik başlıkları ve CORS
+              allowlist aktif.
+            </p>
+          </div>
+          <div className="rounded-xl border border-surface-300/50 bg-surface-50 p-4">
+            <span className="mb-2 inline-block rounded bg-brand-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-300">
+              Tasarım sınırı
+            </span>
+            <p className="text-xs leading-relaxed text-slate-400">
+              Middleware CSMS'e <strong className="text-slate-300">yazmaz</strong> —
+              şarj başlatmaz, durdurmaz, güç limiti değiştirmez. Sadece okur ve
+              öneri döner. Çökerse sahada hiçbir şey değişmez; sürücü uyarı
+              almaz, şarj normal başlar.
+            </p>
+          </div>
+        </div>
+        <p className="mt-4 text-xs text-slate-500">
+          Kişisel veri toplanmıyor: plaka, VIN veya kimlik hiç görülmüyor —
+          motorun tek ihtiyacı aracın kaç kW çektiği. Kaynak kod ve teknik
+          doküman talep üzerine paylaşılabilir.
+        </p>
+      </section>
+
       <footer className="mx-auto mt-8 max-w-7xl border-t border-surface-300/30 pt-4 text-center text-[11px] text-slate-600">
-        <span>Prototip demo · Kişisel veri toplanmaz · Middleware CSMS'e yazmaz, sadece okur</span>
-        <a className="ml-4 text-slate-400 hover:text-brand-300" href="http://turbinetwin.esadseyitoglu.xyz">Diğer proje: TurbineTwin ↗</a>
+        <span>Prototip demo · Simülasyon verileri · Sahada doğrulanmadı</span>
+        <a className="ml-4 text-slate-400 hover:text-brand-300" href="https://turbinetwin.esadseyitoglu.xyz">Diğer proje: TurbineTwin ↗</a>
       </footer>
       <WelcomeGuide
         visible={guideVisible}
