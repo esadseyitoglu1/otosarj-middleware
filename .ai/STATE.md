@@ -1,11 +1,14 @@
 # Mevcut Durum
 
-## Operatör etkisi tahmini geri eklendi (koşullu) — 22 Eylül 2026, henüz deploy edilmedi
+## Operatör etkisi tahmini geri eklendi (koşullu) — 22 Eylül 2026, DEPLOY EDİLDİ
 `EngineLog`'a NUDGE + gerçek kWh farkı varken görünen bir "tahmini ek satış"
 kutusu eklendi (`+33.0 kWh · ~₺459` gibi, dürüstlük notuyla). Detay:
 `.ai/DECISIONS.md` "Operatör etkisi tahmini — koşullu geri ekleme". Test:
 engine 30/30, server 15/15, web build temiz, Playwright ile A/B senaryoları
-doğrulandı. **Henüz commit/push/deploy edilmedi** — local'de.
+doğrulandı. Commit `01dc7ac`, GitHub + sunucuya push edildi, sunucuda
+build+test+restart yapıldı, production'da HMAC imzalı isteklerle doğrulandı:
+senaryo A `operatorImpact.kwhThroughputGainKwh=33`, senaryo B (R2) `=0`
+(beklenen, kutu otomatik gizleniyor). Canlı: https://otopriz.esadseyitoglu.xyz
 
 ## Presentation review + gözden geçirme tamamlandı — 22 Eylül 2026
 Başka bir ajan bir "presentation review" yaptı (R2 düzeltmesi, ciro
