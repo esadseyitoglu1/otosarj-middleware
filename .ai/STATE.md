@@ -1,14 +1,19 @@
 # Mevcut Durum
 
-## Güvenlik incelemesi tamamlandı — 22 Eylül 2026, HENÜZ DEPLOY EDİLMEDİ
+## Güvenlik incelemesi tamamlandı ve DEPLOY EDİLDİ — 22 Eylül 2026
 Claude (sonnet 5) `packages/server` üzerinde savunma amaçlı güvenlik
 incelemesi yaptı (staj referansı için). 2 gerçek yetki-atlatma açığı
 bulup düzeltti + regresyon testi ekledi, HTTP güvenlik header'ları
 (Helmet) ve CORS allowlist eklendi. Detay: `.ai/DECISIONS.md` "Güvenlik
 incelemesi — 22 Eylül 2026". Test: server 20/20 (5 yeni), engine 30/30,
-tüm workspace build temiz. **Commit edilmedi, kullanıcı gözden geçirip
-kendi commit edecek. Sonra sunucuya deploy + `CORS_ALLOWED_ORIGINS` env
-değişkeni sunucuda set edilmeli** (bkz. `.env.production.example`).
+tüm workspace build temiz. Commit `aaa216e`, GitHub + sunucuya push edildi.
+Sunucuda `CORS_ALLOWED_ORIGINS=https://otopriz.esadseyitoglu.xyz`
+`.env`'e eklendi, build+test+restart yapıldı (server 20/20, engine 30/30
+sunucuda da yeşil). Production'da doğrulandı: güvenlik header'ları
+(`X-Content-Type-Options`, `X-Frame-Options`, CSP) dönüyor, cross-tenant
+`decline-nudge` denemesi 400 ile reddediliyor, kendi saha işlemi 200
+dönüyor, senaryo A regresyon yok, Playwright ile web arayüzü hatasız.
+Canlı: https://otopriz.esadseyitoglu.xyz
 
 ## Operatör etkisi tahmini geri eklendi (koşullu) — 22 Eylül 2026, DEPLOY EDİLDİ
 `EngineLog`'a NUDGE + gerçek kWh farkı varken görünen bir "tahmini ek satış"
